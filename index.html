@@ -525,7 +525,7 @@
   }
   .grid-cell {
     aspect-ratio: 1;
-    background: rgba(30, 50, 35, 0.2);
+    background: rgba(40, 65, 45, 0.35);
     transition: background 0.4s ease, opacity 0.4s ease;
     position: relative;
   }
@@ -1159,82 +1159,53 @@
 <!-- ==================== MODEL & INVERSION ==================== -->
 <section id="model">
   <div class="container">
-    <div class="model-layout">
-      <div class="reveal-left">
-        <span class="section-label">Advanced</span>
-        <h2 class="section-title">Magnetic Inversion &amp; Modeling</h2>
-        <p class="section-subtitle">MagMapper includes a physics-based inverse modeling algorithm that estimates well depth and magnetic properties from your survey data.</p>
+    <div class="reveal-left">
+      <span class="section-label">Advanced</span>
+      <h2 class="section-title">Magnetic Inversion &amp; Modeling</h2>
+      <p class="section-subtitle">MagMapper includes a physics-based inverse modeling algorithm that estimates well depth and magnetic properties from your survey data.</p>
 
-        <div class="model-params">
-          <h4 style="color:#81C784; font-size:0.85rem; margin-bottom: 16px; letter-spacing:1px; text-transform:uppercase;">Model Parameters (example)</h4>
-          <div class="param-row">
-            <span class="param-name">Center (Row, Col)</span>
-            <span class="param-value">6, 6</span>
-          </div>
-          <div class="param-row">
-            <span class="param-name">Diameter</span>
-            <span class="param-value">5 cells</span>
-          </div>
-          <div class="param-row">
-            <span class="param-name">Depth</span>
-            <span class="param-value">1 meter</span>
-          </div>
-          <div class="param-row">
-            <span class="param-name">Strength</span>
-            <span class="param-value">2000 susceptibility</span>
-          </div>
-          <div class="param-row">
-            <span class="param-name">RMS Fit</span>
-            <span class="param-value" style="color:#FDD835;">4102.24 nT</span>
+      <p style="color:#6a8a6a; font-size:0.82rem; margin-top: 16px; line-height: 1.6;">
+        <strong style="color:#8aaa8a;">Two thresholds:</strong> The Model toggle appears once <strong style="color:#8aaa8a;">50%</strong> of the overall grid is filled. To run the inversion, <strong style="color:#8aaa8a;">~90%</strong> of cells within the selected model window must be filled (or full coverage if the window extends to a grid edge).
+      </p>
+
+      <p style="color:#6a8a6a; font-size:0.82rem; margin-top: 12px; line-height: 1.6;">
+        <strong style="color:#8aaa8a;">&ldquo;Insufficient Data&rdquo;</strong> appears when &lt;90% of the model window cells are filled. Fix: walk more within the model area, or reduce the diameter.
+      </p>
+    </div>
+
+    <!-- 2x2 Screenshot Grid -->
+    <div class="reveal" style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 36px; max-width: 500px; margin-left: auto; margin-right: auto;">
+      <div class="phone" style="width: 100%;">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <img src="screenshots/Nir/IMG_0164.PNG" alt="Active Survey Grid" loading="lazy">
           </div>
         </div>
-
-        <p style="color:#6a8a6a; font-size:0.82rem; margin-top: 16px; line-height: 1.6;">
-          <strong style="color:#8aaa8a;">Two thresholds:</strong> The Model toggle appears once <strong style="color:#8aaa8a;">50%</strong> of the overall grid is filled. To run the inversion, <strong style="color:#8aaa8a;">~90%</strong> of cells within the selected model window must be filled (or full coverage if the window extends to a grid edge).
-        </p>
-
-        <p style="color:#6a8a6a; font-size:0.82rem; margin-top: 12px; line-height: 1.6;">
-          <strong style="color:#8aaa8a;">&ldquo;Insufficient Data&rdquo;</strong> appears when &lt;90% of the model window cells are filled. Fix: walk more within the model area, or reduce the diameter.
-        </p>
-
-        <!-- Screenshots below text -->
-        <div style="display:flex; justify-content:flex-start; gap: 16px; flex-wrap: wrap; margin-top: 24px;">
-          <div class="phone" style="width: 160px;">
-            <div class="phone-frame">
-              <div class="phone-screen">
-                <img src="screenshots/Nir/IMG_0165.PNG" alt="Model Profile Graph" loading="lazy">
-              </div>
-            </div>
-            <div class="phone-label">Profile Graph</div>
-          </div>
-          <div class="phone" style="width: 160px;">
-            <div class="phone-frame">
-              <div class="phone-screen">
-                <img src="screenshots/Manoj/Screenshot_20260318-114344.png" alt="Grid with Model View" loading="lazy">
-              </div>
-            </div>
-            <div class="phone-label">Grid + Model</div>
-          </div>
-          <div class="phone" style="width: 160px;">
-            <div class="phone-frame">
-              <div class="phone-screen">
-                <img src="screenshots/Manoj/Screenshot_20260318-114433.png" alt="Insufficient Data" loading="lazy">
-              </div>
-            </div>
-            <div class="phone-label">Needs More Data</div>
-          </div>
-        </div>
+        <div class="phone-label">Active Survey</div>
       </div>
-
-      <div class="reveal-right" style="display:flex; justify-content:center;">
-        <div class="phone phone-lg">
-          <div class="phone-frame">
-            <div class="phone-screen">
-              <img src="screenshots/Nir/IMG_0166.PNG" alt="Model Parameters Screen" loading="lazy">
-            </div>
+      <div class="phone" style="width: 100%;">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <img src="screenshots/Nir/IMG_0165.PNG" alt="Model Profile Graph" loading="lazy">
           </div>
-          <div class="phone-label">Model Parameters</div>
         </div>
+        <div class="phone-label">Profile Graph</div>
+      </div>
+      <div class="phone" style="width: 100%;">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <img src="screenshots/Manoj/Screenshot_20260318-114344.png" alt="Grid with Model View" loading="lazy">
+          </div>
+        </div>
+        <div class="phone-label">Grid + Model</div>
+      </div>
+      <div class="phone" style="width: 100%;">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <img src="screenshots/Manoj/Screenshot_20260318-114433.png" alt="Insufficient Data" loading="lazy">
+          </div>
+        </div>
+        <div class="phone-label">Needs More Data</div>
       </div>
     </div>
   </div>
@@ -1493,8 +1464,8 @@ function magColor(r, c, alpha) {
   const dist = Math.sqrt(dr*dr + dc*dc);
   const val = Math.max(0, 1 - dist / 6);
   const hue = (1 - val) * 240;
-  const sat = 60 + val * 30;
-  const light = 25 + val * 40;
+  const sat = 70 + val * 25;
+  const light = 40 + val * 35;
   return `hsla(${hue}, ${sat}%, ${light}%, ${alpha})`;
 }
 
@@ -1548,8 +1519,12 @@ function drawWalkFrame(pathSoFar, currentPos, fullPath) {
   const cellW = w / G;
   ctx.clearRect(0, 0, w, h);
 
+  // Subtle background fill for better contrast
+  ctx.fillStyle = 'rgba(15, 30, 20, 0.4)';
+  ctx.fillRect(0, 0, w, h);
+
   // Draw grid lines
-  ctx.strokeStyle = 'rgba(76, 175, 80, 0.08)';
+  ctx.strokeStyle = 'rgba(76, 175, 80, 0.15)';
   ctx.lineWidth = 0.5;
   for (let i = 0; i <= G; i++) {
     ctx.beginPath(); ctx.moveTo(i * cellW, 0); ctx.lineTo(i * cellW, h); ctx.stroke();
@@ -1559,17 +1534,19 @@ function drawWalkFrame(pathSoFar, currentPos, fullPath) {
   // Draw well marker at center
   ctx.fillStyle = '#FFD54F';
   ctx.beginPath();
-  ctx.arc(5.5 * cellW, 5.5 * cellW, 5, 0, Math.PI * 2);
+  ctx.arc(5.5 * cellW, 5.5 * cellW, 6, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = 'rgba(255, 213, 79, 0.15)';
+  ctx.fillStyle = 'rgba(255, 213, 79, 0.25)';
   ctx.beginPath();
   ctx.arc(5.5 * cellW, 5.5 * cellW, 20, 0, Math.PI * 2);
   ctx.fill();
 
   // Draw path trail
   if (pathSoFar.length > 1) {
-    ctx.strokeStyle = 'rgba(76, 175, 80, 0.3)';
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'rgba(76, 175, 80, 0.5)';
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.beginPath();
@@ -1583,19 +1560,19 @@ function drawWalkFrame(pathSoFar, currentPos, fullPath) {
   // Draw surveyor dot
   if (currentPos) {
     // Glow
-    ctx.fillStyle = 'rgba(76, 175, 80, 0.25)';
+    ctx.fillStyle = 'rgba(76, 175, 80, 0.35)';
     ctx.beginPath();
-    ctx.arc(currentPos.x, currentPos.y, 10, 0, Math.PI * 2);
+    ctx.arc(currentPos.x, currentPos.y, 12, 0, Math.PI * 2);
     ctx.fill();
     // Dot
-    ctx.fillStyle = '#4CAF50';
+    ctx.fillStyle = '#66BB6A';
     ctx.beginPath();
-    ctx.arc(currentPos.x, currentPos.y, 5, 0, Math.PI * 2);
+    ctx.arc(currentPos.x, currentPos.y, 6, 0, Math.PI * 2);
     ctx.fill();
     // White center
     ctx.fillStyle = '#fff';
     ctx.beginPath();
-    ctx.arc(currentPos.x, currentPos.y, 2, 0, Math.PI * 2);
+    ctx.arc(currentPos.x, currentPos.y, 2.5, 0, Math.PI * 2);
     ctx.fill();
   }
 }
