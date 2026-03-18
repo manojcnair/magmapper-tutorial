@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MagMapper Quick User Guide</title>
+<link rel="icon" type="image/png" href="assets/icons/app_icon.png">
+<style>
+  /* ===== RESET & BASE ===== */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 70px; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #0a0f0a;
+    color: #e0e8e0;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ===== ANIMATED BACKGROUND ===== */
+  .bg-gradient {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(135deg, #0a1a0f 0%, #0d2818 25%, #0a1a0f 50%, #112a1a 75%, #0a1a0f 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 20s ease infinite;
+    z-index: -2;
+  }
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Floating particles */
+  .particles {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: -1; pointer-events: none; overflow: hidden;
+  }
+  .particle {
+    position: absolute;
+    width: 4px; height: 4px;
+    background: rgba(76, 175, 80, 0.15);
+    border-radius: 50%;
+    animation: float linear infinite;
+  }
+  @keyframes float {
+    0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* ===== STICKY NAV ===== */
+  .nav {
+    position: fixed; top: 0; left: 0; width: 100%;
+    background: rgba(10, 26, 15, 0.92);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(76, 175, 80, 0.2);
+    z-index: 1000;
+    padding: 10px 0;
+    transition: all 0.3s;
+  }
+  .nav-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px;
+  }
+  .nav-logo {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 1.2rem; font-weight: 700;
+    background: linear-gradient(135deg, #4CAF50, #81C784);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .nav-logo img {
+    width: 32px; height: 32px; border-radius: 6px;
+  }
+  .nav-dots {
+    display: flex; gap: 8px; align-items: center;
+  }
+  .nav-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: rgba(76, 175, 80, 0.25);
+    border: 1.5px solid rgba(76, 175, 80, 0.4);
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    /* Accessibility */
+    role: button;
+    tabindex: 0;
+  }
+  .nav-dot.active {
+    background: #4CAF50;
+    box-shadow: 0 0 12px rgba(76, 175, 80, 0.6);
+    transform: scale(1.2);
+  }
+  .nav-dot .tooltip {
+    position: absolute; bottom: -32px; left: 50%;
+    transform: translateX(-50%); white-space: nowrap;
+    font-size: 0.65rem; background: rgba(0,0,0,0.85);
+    color: #81C784; padding: 3px 8px; border-radius: 4px;
+    opacity: 0; transition: opacity 0.2s; pointer-events: none;
+  }
+  .nav-dot:hover .tooltip, .nav-dot:focus .tooltip { opacity: 1; }
+
+  .nav-links {
+    display: flex; gap: 20px;
+  }
+  .nav-links a {
+    color: #a0b8a0; text-decoration: none; font-size: 0.8rem;
+    font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover, .nav-links a.active { color: #4CAF50; }
+
+  /* Mobile nav: show text labels instead of just dots */
+  .nav-mobile-links { display: none; }
+  @media (max-width: 900px) {
+    .nav-links { display: none; }
+    .nav-dots { display: none; }
+    .nav-mobile-links {
+      display: flex; gap: 6px; flex-wrap: wrap; justify-content: center;
+    }
+    .nav-mobile-links a {
+      color: #8aaa8a; text-decoration: none;
+      font-size: 0.65rem; font-weight: 600;
+      padding: 4px 8px; border-radius: 12px;
+      background: rgba(76, 175, 80, 0.08);
+      border: 1px solid rgba(76, 175, 80, 0.15);
+      transition: all 0.3s;
+    }
+    .nav-mobile-links a:hover, .nav-mobile-links a.active {
+      background: rgba(76, 175, 80, 0.2);
+      color: #4CAF50;
+    }
+  }
+
+  /* ===== CONTENT CONTAINER ===== */
+  .container {
+    max-width: 1100px; margin: 0 auto; padding: 0 24px;
+    position: relative;
+  }
+
+  /* ===== HERO SECTION ===== */
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center;
+    position: relative;
+    padding: 100px 24px;
+  }
+  .hero-content { max-width: 800px; }
+  .hero-logo {
+    width: 100px; height: 100px;
+    border-radius: 20px;
+    display: block;
+    margin: 0 auto 24px;
+    box-shadow: 0 8px 30px rgba(76, 175, 80, 0.3);
+    animation: fadeInDown 0.8s ease;
+  }
+
+  /* ===== LIGHTBOX ===== */
+  .lightbox-overlay {
+    display: none;
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.88);
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+    align-items: center; justify-content: center;
+    cursor: zoom-out;
+    animation: lbFadeIn 0.25s ease;
+  }
+  .lightbox-overlay.active { display: flex; }
+  .lightbox-overlay img {
+    max-width: 90vw; max-height: 90vh;
+    border-radius: 16px;
+    box-shadow: 0 20px 80px rgba(0,0,0,0.6);
+    animation: lbZoomIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .lightbox-close {
+    position: absolute; top: 20px; right: 28px;
+    color: rgba(255,255,255,0.6); font-size: 2rem;
+    cursor: pointer; background: none; border: none;
+    transition: color 0.3s;
+  }
+  .lightbox-close:hover { color: white; }
+  @keyframes lbFadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes lbZoomIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .phone-screen { cursor: zoom-in; }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(76, 175, 80, 0.12);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    border-radius: 50px;
+    padding: 6px 20px;
+    font-size: 0.8rem;
+    color: #81C784;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    animation: fadeInDown 0.8s ease 0.2s both;
+  }
+  .hero h1 {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    animation: fadeInUp 0.8s ease 0.3s both;
+  }
+  .hero h1 .grad {
+    background: linear-gradient(135deg, #4CAF50, #81C784, #A5D6A7);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero p {
+    font-size: 1.15rem; color: #9ab89a;
+    max-width: 600px; margin: 0 auto 36px;
+    animation: fadeInUp 0.8s ease 0.5s both;
+  }
+  .hero-cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: linear-gradient(135deg, #2E7D32, #4CAF50);
+    color: white; border: none; border-radius: 50px;
+    padding: 14px 32px; font-size: 1rem; font-weight: 600;
+    cursor: pointer; text-decoration: none;
+    transition: all 0.3s; animation: fadeInUp 0.8s ease 0.7s both;
+    box-shadow: 0 4px 20px rgba(76, 175, 80, 0.3);
+  }
+  .hero-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(76, 175, 80, 0.5);
+  }
+  .scroll-hint {
+    position: absolute; bottom: 40px; left: 50%;
+    transform: translateX(-50%);
+    animation: bounce 2s infinite;
+    color: rgba(76, 175, 80, 0.5);
+    font-size: 1.5rem;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(10px); }
+  }
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== SECTION STYLES ===== */
+  section {
+    padding: 100px 0;
+    position: relative;
+  }
+  .section-label {
+    display: inline-block;
+    font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase;
+    color: #4CAF50; font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700;
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+  .section-subtitle {
+    font-size: 1.05rem;
+    color: #8aaa8a;
+    max-width: 600px;
+    margin-bottom: 48px;
+  }
+
+  /* ===== REVEAL ANIMATIONS ===== */
+  .reveal {
+    opacity: 0; transform: translateY(40px);
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-left {
+    opacity: 0; transform: translateX(-60px);
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal-left.visible { opacity: 1; transform: translateX(0); }
+  .reveal-right {
+    opacity: 0; transform: translateX(60px);
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal-right.visible { opacity: 1; transform: translateX(0); }
+  .reveal-scale {
+    opacity: 0; transform: scale(0.85);
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal-scale.visible { opacity: 1; transform: scale(1); }
+
+  /* ===== PHONE MOCKUP ===== */
+  .phone {
+    width: 220px;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .phone-frame {
+    background: #1a1a1a;
+    border-radius: 28px;
+    padding: 8px;
+    border: 2px solid #333;
+    box-shadow:
+      0 20px 60px rgba(0,0,0,0.5),
+      0 0 0 1px rgba(255,255,255,0.05),
+      inset 0 0 0 1px rgba(255,255,255,0.05);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .phone:hover .phone-frame {
+    transform: translateY(-4px);
+    box-shadow:
+      0 30px 80px rgba(0,0,0,0.6),
+      0 0 40px rgba(76, 175, 80, 0.1),
+      0 0 0 1px rgba(255,255,255,0.05),
+      inset 0 0 0 1px rgba(255,255,255,0.05);
+  }
+  .phone-screen {
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+  }
+  .phone-screen img {
+    width: 100%; display: block;
+  }
+  .phone-label {
+    text-align: center;
+    margin-top: 12px;
+    font-size: 0.82rem;
+    color: #81C784;
+    font-weight: 500;
+  }
+  .phone-sm { width: 170px; }
+  .phone-lg { width: 260px; }
+
+  /* ===== WHAT IS MAGMAPPER ===== */
+  .what-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+  .what-text p {
+    color: #8aaa8a; margin-bottom: 16px;
+    font-size: 0.95rem;
+  }
+  .stat-row {
+    display: flex; gap: 32px; margin-top: 24px;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-size: 2rem; font-weight: 800;
+    background: linear-gradient(135deg, #4CAF50, #81C784);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .stat-label {
+    font-size: 0.72rem; color: #6a8a6a;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+
+  /* ===== WORKFLOW TIMELINE ===== */
+  .timeline {
+    position: relative;
+    padding: 20px 0;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, transparent, #2E7D32 10%, #4CAF50 50%, #2E7D32 90%, transparent);
+  }
+  .timeline-step {
+    display: flex;
+    align-items: center;
+    gap: 48px;
+    margin-bottom: 80px;
+    position: relative;
+  }
+  .timeline-step:nth-child(even) {
+    flex-direction: row-reverse;
+  }
+  .timeline-step .step-content {
+    flex: 1;
+    max-width: 420px;
+  }
+  .timeline-step:nth-child(odd) .step-content { text-align: right; margin-left: auto; }
+  .timeline-step:nth-child(even) .step-content { text-align: left; margin-right: auto; }
+  .timeline-step .step-phone {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+  }
+  .step-number {
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, #2E7D32, #4CAF50);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 1.1rem;
+    color: white;
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.4);
+    z-index: 2;
+    border: 3px solid #0a1a0f;
+  }
+  .step-icon { font-size: 2rem; margin-bottom: 8px; }
+  .step-title {
+    font-size: 1.3rem; font-weight: 700;
+    margin-bottom: 8px; color: #e0f0e0;
+  }
+  .step-desc {
+    font-size: 0.9rem; color: #8aaa8a; line-height: 1.7;
+  }
+
+  /* ===== FEATURE CARDS ===== */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-top: 12px;
+  }
+  .feature-card {
+    background: rgba(20, 40, 25, 0.6);
+    border: 1px solid rgba(76, 175, 80, 0.15);
+    border-radius: 16px;
+    padding: 28px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+  }
+  .feature-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.08), transparent);
+    opacity: 0; transition: opacity 0.4s;
+  }
+  .feature-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(76, 175, 80, 0.4);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+  }
+  .feature-card:hover::before { opacity: 1; }
+  .feature-card .card-icon {
+    font-size: 2rem; margin-bottom: 12px; display: block;
+  }
+  .feature-card h4 {
+    font-size: 1.1rem; font-weight: 600;
+    color: #c8e6c9; margin-bottom: 8px;
+  }
+  .feature-card p {
+    font-size: 0.85rem; color: #7a9a7a; line-height: 1.6;
+  }
+  .feature-card .card-expand {
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .feature-card.expanded .card-expand { max-height: 300px; }
+  .expand-hint {
+    display: inline-block; margin-top: 10px;
+    font-size: 0.75rem; color: #4CAF50; font-weight: 500;
+  }
+  .feature-card.expanded .expand-hint .hint-tap { display: none; }
+  .feature-card.expanded .expand-hint::after { content: 'Tap to collapse'; font-size: 0.75rem; color: #4a7a4a; }
+
+  /* ===== INTERACTIVE WALK DEMO ===== */
+  .walk-demo-container {
+    display: flex;
+    gap: 32px;
+    align-items: stretch;
+    margin-top: 24px;
+  }
+  .walk-demo-panel {
+    flex: 1;
+    background: rgba(15, 30, 20, 0.7);
+    border: 1px solid rgba(76, 175, 80, 0.15);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .walk-demo-panel h5 {
+    font-size: 0.75rem; letter-spacing: 1.5px;
+    text-transform: uppercase; color: #4CAF50;
+    margin-bottom: 12px; font-weight: 600;
+  }
+  .walk-canvas {
+    width: 280px; height: 280px;
+    border-radius: 8px;
+    background: rgba(10, 20, 15, 0.8);
+    border: 1px solid rgba(76, 175, 80, 0.1);
+  }
+  .walk-legend {
+    margin-top: 10px;
+    font-size: 0.72rem; color: #6a8a6a;
+    text-align: center; line-height: 1.5;
+  }
+
+  /* ===== ANIMATED GRID DEMO (left panel) ===== */
+  .grid-demo {
+    display: grid;
+    grid-template-columns: repeat(11, 1fr);
+    gap: 2px;
+    width: 280px; height: 280px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(10, 20, 15, 0.8);
+    border: 1px solid rgba(76, 175, 80, 0.1);
+  }
+  .grid-cell {
+    aspect-ratio: 1;
+    background: rgba(30, 50, 35, 0.4);
+    transition: background 0.4s ease, opacity 0.4s ease;
+    position: relative;
+  }
+  .grid-cell.half-filled {
+    opacity: 0.55;
+    animation: cellFill 0.3s ease forwards;
+  }
+  .grid-cell.filled {
+    opacity: 1;
+    animation: cellFill 0.3s ease forwards;
+  }
+  @keyframes cellFill {
+    0% { transform: scale(0.7); }
+    100% { transform: scale(1); }
+  }
+  .grid-legend {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 10px; justify-content: center;
+  }
+  .grid-legend-bar {
+    width: 140px; height: 8px; border-radius: 4px;
+    background: linear-gradient(90deg, #1565C0, #42A5F5, #66BB6A, #FDD835, #FF7043, #D32F2F);
+  }
+  .grid-legend span { font-size: 0.7rem; color: #6a8a6a; }
+
+  /* ===== MODEL SECTION ===== */
+  .model-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+  .model-params {
+    background: rgba(20, 40, 25, 0.5);
+    border: 1px solid rgba(76, 175, 80, 0.15);
+    border-radius: 16px;
+    padding: 32px;
+  }
+  .param-row {
+    display: flex; justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(76, 175, 80, 0.08);
+  }
+  .param-row:last-child { border-bottom: none; }
+  .param-name { font-size: 0.9rem; color: #8aaa8a; }
+  .param-value {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    color: #81C784; font-weight: 600;
+  }
+
+  /* ===== UPLOAD SECTION ===== */
+  .upload-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin: 48px 0;
+    flex-wrap: wrap;
+  }
+  .upload-step {
+    background: rgba(20, 40, 25, 0.6);
+    border: 1px solid rgba(76, 175, 80, 0.15);
+    border-radius: 12px;
+    padding: 20px 24px;
+    text-align: center;
+    min-width: 140px;
+    transition: all 0.4s;
+  }
+  .upload-step:hover {
+    border-color: rgba(76, 175, 80, 0.4);
+    transform: translateY(-2px);
+  }
+  .upload-step .u-icon { font-size: 1.8rem; margin-bottom: 6px; }
+  .upload-step .u-label { font-size: 0.78rem; color: #81C784; font-weight: 600; }
+  .upload-step .u-desc { font-size: 0.7rem; color: #6a8a6a; margin-top: 4px; }
+  .upload-arrow { font-size: 1.5rem; color: #2E7D32; }
+
+  /* ===== ACHIEVEMENTS ===== */
+  .achievements-row {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 36px 0;
+  }
+  .achievement {
+    background: rgba(20, 40, 25, 0.6);
+    border: 1px solid rgba(76, 175, 80, 0.15);
+    border-radius: 16px;
+    padding: 24px 20px;
+    text-align: center;
+    width: 150px;
+    transition: all 0.4s;
+  }
+  .achievement:hover {
+    transform: translateY(-6px) scale(1.03);
+    border-color: rgba(76, 175, 80, 0.5);
+    box-shadow: 0 12px 40px rgba(76, 175, 80, 0.15);
+  }
+  .achievement .a-icon {
+    font-size: 2.4rem;
+    display: block; margin-bottom: 8px;
+    transition: transform 0.4s;
+  }
+  .achievement:hover .a-icon {
+    transform: scale(1.15) rotate(-5deg);
+    animation: shimmer 0.6s ease;
+  }
+  @keyframes shimmer {
+    0% { filter: brightness(1); }
+    50% { filter: brightness(1.5); }
+    100% { filter: brightness(1); }
+  }
+  .achievement .a-name {
+    font-size: 0.82rem; color: #c8e6c9; font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .achievement .a-desc { font-size: 0.7rem; color: #6a8a6a; }
+  .medal-track {
+    display: flex; gap: 6px; justify-content: center; margin-top: 8px;
+  }
+  .medal {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.15);
+    font-size: 0.55rem; display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ===== PRO TIPS ===== */
+  .tips-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 32px;
+  }
+  .tip {
+    background: rgba(20, 40, 25, 0.5);
+    border: 1px solid rgba(76, 175, 80, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s;
+  }
+  .tip:hover {
+    border-color: rgba(76, 175, 80, 0.3);
+    transform: translateY(-2px);
+  }
+  .tip-icon { font-size: 1.4rem; margin-bottom: 8px; display: block; }
+  .tip h5 { font-size: 0.9rem; color: #c8e6c9; margin-bottom: 6px; }
+  .tip p { font-size: 0.8rem; color: #7a9a7a; line-height: 1.5; }
+
+  /* ===== PHONES ROW ===== */
+  .phones-row {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  /* ===== MAG SHOWCASE ===== */
+  .mag-showcase {
+    display: flex;
+    gap: 48px;
+    align-items: center;
+  }
+  .mag-showcase-text { flex: 1; }
+  .mag-showcase-visual { flex: 0 0 auto; }
+
+  /* ===== FOOTER ===== */
+  footer {
+    padding: 60px 0 40px;
+    border-top: 1px solid rgba(76, 175, 80, 0.1);
+    text-align: center;
+  }
+  footer .footer-logos {
+    display: flex; gap: 32px; justify-content: center;
+    align-items: center; margin-bottom: 20px;
+    font-size: 0.85rem; color: #6a8a6a; font-weight: 600;
+    letter-spacing: 1px;
+  }
+  footer p { font-size: 0.75rem; color: #4a6a4a; }
+  footer a { color: #4CAF50; text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  /* ===== DIVIDER ===== */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(76, 175, 80, 0.3), transparent);
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 900px) {
+    .what-grid, .model-layout { grid-template-columns: 1fr; }
+    .mag-showcase { flex-direction: column; }
+    .walk-demo-container { flex-direction: column; }
+    .timeline::before { left: 24px; }
+    .timeline-step, .timeline-step:nth-child(even) {
+      flex-direction: column; gap: 24px;
+    }
+    .timeline-step .step-content,
+    .timeline-step:nth-child(odd) .step-content,
+    .timeline-step:nth-child(even) .step-content {
+      text-align: left; margin: 0; max-width: 100%;
+    }
+    .step-number {
+      position: relative; left: auto; top: auto;
+      transform: none; margin-bottom: 12px;
+    }
+    .features-grid { grid-template-columns: 1fr; }
+    .tips-grid { grid-template-columns: 1fr; }
+    .walk-canvas, .grid-demo { width: 240px; height: 240px; }
+  }
+
+  /* ===== PRINT STYLES ===== */
+  @media print {
+    .bg-gradient, .particles, .nav, .scroll-hint { display: none !important; }
+    body { background: white; color: #1a1a1a; }
+    .hero { min-height: auto; padding: 40px 0; }
+    section { padding: 30px 0; }
+    .reveal, .reveal-left, .reveal-right, .reveal-scale {
+      opacity: 1 !important; transform: none !important;
+    }
+    .phone-frame { box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+    /* Auto-expand all cards for print */
+    .feature-card .card-expand { max-height: none !important; }
+    .expand-hint { display: none !important; }
+    .feature-card { cursor: default; }
+    @page { size: letter; margin: 0.5in; }
+    .page-break { page-break-before: always; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Lightbox overlay -->
+<div class="lightbox-overlay" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" aria-label="Close">&times;</button>
+  <img id="lightboxImg" src="" alt="Enlarged screenshot">
+</div>
+
+<!-- Animated Background -->
+<div class="bg-gradient"></div>
+<div class="particles" id="particles"></div>
+
+<!-- Navigation -->
+<nav class="nav" aria-label="Main navigation">
+  <div class="nav-inner">
+    <div class="nav-logo">
+      <img src="assets/icons/app_icon.png" alt="MagMapper Logo">
+      <span>MagMapper</span>
+    </div>
+    <div class="nav-dots" aria-label="Section indicators">
+      <button class="nav-dot active" onclick="scrollTo('#hero')" aria-label="Home"><span class="tooltip">Home</span></button>
+      <button class="nav-dot" onclick="scrollTo('#what')" aria-label="About"><span class="tooltip">About</span></button>
+      <button class="nav-dot" onclick="scrollTo('#workflow')" aria-label="Get Started"><span class="tooltip">Get Started</span></button>
+      <button class="nav-dot" onclick="scrollTo('#collecting')" aria-label="Collect Data"><span class="tooltip">Collect</span></button>
+      <button class="nav-dot" onclick="scrollTo('#features')" aria-label="Features"><span class="tooltip">Features</span></button>
+      <button class="nav-dot" onclick="scrollTo('#model')" aria-label="Model"><span class="tooltip">Model</span></button>
+      <button class="nav-dot" onclick="scrollTo('#upload')" aria-label="Upload"><span class="tooltip">Upload</span></button>
+      <button class="nav-dot" onclick="scrollTo('#awards')" aria-label="Awards"><span class="tooltip">Awards</span></button>
+      <button class="nav-dot" onclick="scrollTo('#tips')" aria-label="Tips"><span class="tooltip">Tips</span></button>
+    </div>
+    <!-- Mobile: labeled links instead of dots -->
+    <div class="nav-mobile-links">
+      <a href="#what">About</a>
+      <a href="#workflow">Start</a>
+      <a href="#collecting">Collect</a>
+      <a href="#features">Features</a>
+      <a href="#model">Model</a>
+      <a href="#upload">Upload</a>
+      <a href="#awards">Awards</a>
+      <a href="#tips">Tips</a>
+    </div>
+    <div class="nav-links">
+      <a href="#what">About</a>
+      <a href="#workflow">Start</a>
+      <a href="#collecting">Collect</a>
+      <a href="#upload">Upload</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ==================== HERO ==================== -->
+<section class="hero" id="hero">
+  <div class="hero-content">
+    <img class="hero-logo" src="assets/icons/app_icon.png" alt="MagMapper Logo">
+    <div class="hero-badge">Quick User Guide &bull; 2026</div>
+    <h1><span class="grad">MagMapper</span><br>Citizen Science<br>for Orphan Well<br>Detection</h1>
+    <p>Use your smartphone's magnetometer to detect abandoned oil &amp; gas wells. Walk, collect, and contribute to a national database protecting our environment.</p>
+    <a href="#what" class="hero-cta">Get Started &darr;</a>
+  </div>
+  <div class="scroll-hint">&darr;</div>
+</section>
+
+<!-- ==================== WHAT IS MAGMAPPER ==================== -->
+<section id="what">
+  <div class="container">
+    <div class="what-grid">
+      <div class="what-text reveal-left">
+        <span class="section-label">About the App</span>
+        <h2 class="section-title">What is MagMapper?</h2>
+        <p>MagMapper is a free mobile app that turns your smartphone into a magnetic field survey instrument. Metal well casings from abandoned oil and gas wells create magnetic anomalies &mdash; often <strong>thousands of nanoTesla (nT)</strong> above background levels &mdash; that your phone's built-in magnetometer can detect.</p>
+        <p>The app supports the <strong>U.S. Department of Energy's</strong> Undocumented Orphan Well Research Program, funded through the Bipartisan Infrastructure Law's <strong>$4.7 billion</strong> allocation for well remediation.</p>
+        <div class="stat-row">
+          <div class="stat">
+            <div class="stat-num">~50,000</div>
+            <div class="stat-label">nT Background Field</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num">1000s</div>
+            <div class="stat-label">nT Well Anomaly</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num">$4.7B</div>
+            <div class="stat-label">DOE Funding</div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal-right" style="display:flex; justify-content:center;">
+        <div class="phone phone-lg">
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <img src="screenshots/Manoj/Screenshot_20260318-114001.png" alt="MagMapper Sign In" loading="lazy">
+            </div>
+          </div>
+          <div class="phone-label">Sign In Screen</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Safety callout - right after What is MagMapper -->
+    <div class="reveal" style="margin-top: 48px; background: rgba(255,152,0,0.08); border: 1px solid rgba(255,152,0,0.25); border-radius: 16px; padding: 28px;">
+      <div style="display: flex; gap: 16px; align-items: flex-start;">
+        <span style="font-size: 2rem;">&#x26A0;</span>
+        <div>
+          <h4 style="color: #FFB74D; font-size: 1rem; margin-bottom: 8px;">Safety First</h4>
+          <p style="color: #a08060; font-size: 0.85rem; line-height: 1.7;">
+            Abandoned well sites may have hazardous conditions: unstable ground, toxic gases, or hidden openings. <strong>Never</strong> approach a well opening directly. Stay on stable ground, inform someone of your field plans, and carry appropriate safety equipment. If you encounter a dangerous site, note it and move on.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ==================== GETTING STARTED WORKFLOW ==================== -->
+<section id="workflow">
+  <div class="container">
+    <div class="reveal" style="text-align:center; margin-bottom: 60px;">
+      <span class="section-label">Getting Started</span>
+      <h2 class="section-title">From Sign-In to Survey<br>in 4 Simple Steps</h2>
+      <p class="section-subtitle" style="margin: 16px auto 0;">MagMapper guides you through the entire process. Here's how it works.</p>
+    </div>
+
+    <div class="timeline">
+      <!-- Step 1 -->
+      <div class="timeline-step reveal-left">
+        <div class="step-content">
+          <div class="step-icon">&#x1F513;</div>
+          <div class="step-title">Sign In with Google</div>
+          <div class="step-desc">Open MagMapper and tap <strong>"Sign In with Google"</strong>. Your account links your surveys to our secure cloud. One tap &mdash; no passwords to remember.</div>
+        </div>
+        <div class="step-number">1</div>
+        <div class="step-phone">
+          <div class="phone phone-sm">
+            <div class="phone-frame">
+              <div class="phone-screen">
+                <img src="screenshots/Manoj/Screenshot_20260318-114001.png" alt="Sign In" loading="lazy">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="timeline-step reveal-right">
+        <div class="step-content">
+          <div class="step-icon">&#x1F5FA;</div>
+          <div class="step-title">Explore the Map</div>
+          <div class="step-desc">The <strong>New</strong> tab shows a satellite map with a hexagonal overlay indicating well data density. <strong>Zoom in</strong> to see individual well markers (oil derrick icons) from the offline database.</div>
+        </div>
+        <div class="step-number">2</div>
+        <div class="step-phone">
+          <div class="phone phone-sm">
+            <div class="phone-frame">
+              <div class="phone-screen">
+                <img src="screenshots/Manoj/Screenshot_20260318-114112.png" alt="Map View" loading="lazy">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="timeline-step reveal-left">
+        <div class="step-content">
+          <div class="step-icon">&#x1F4CD;</div>
+          <div class="step-title">Select a Well</div>
+          <div class="step-desc">Tap a well marker to see its <strong>API number</strong> and details. Choose whether to use the <strong>marked location</strong> or <strong>your current GPS location</strong> as the survey center. You can also <strong>long-press</strong> the map to survey an unmarked location &mdash; <em>zoom in deeply first</em> (the app requires a close zoom level for accurate placement).</div>
+        </div>
+        <div class="step-number">3</div>
+        <div class="step-phone">
+          <div class="phones-row">
+            <div class="phone" style="width:140px">
+              <div class="phone-frame">
+                <div class="phone-screen">
+                  <img src="screenshots/Manoj/Screenshot_20260318-114139.png" alt="Well Info" loading="lazy">
+                </div>
+              </div>
+            </div>
+            <div class="phone" style="width:140px">
+              <div class="phone-frame">
+                <div class="phone-screen">
+                  <img src="screenshots/Manoj/Screenshot_20260318-114151.png" alt="Location Choice" loading="lazy">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="timeline-step reveal-right">
+        <div class="step-content">
+          <div class="step-icon">&#x1F4DD;</div>
+          <div class="step-title">Name &amp; Create Survey</div>
+          <div class="step-desc">Give your survey a descriptive name (3&ndash;15 characters) and tap <strong>Submit</strong>. You're now ready to start collecting magnetic data! Your survey appears in the <strong>Surveys</strong> tab.</div>
+        </div>
+        <div class="step-number">4</div>
+        <div class="step-phone">
+          <div class="phones-row">
+            <div class="phone" style="width:140px">
+              <div class="phone-frame">
+                <div class="phone-screen">
+                  <img src="screenshots/Manoj/Screenshot_20260318-114252.png" alt="New Survey" loading="lazy">
+                </div>
+              </div>
+            </div>
+            <div class="phone" style="width:140px">
+              <div class="phone-frame">
+                <div class="phone-screen">
+                  <img src="screenshots/Manoj/Screenshot_20260318-114302.png" alt="Surveys List" loading="lazy">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider page-break"></div>
+
+<!-- ==================== COLLECTING DATA ==================== -->
+<section id="collecting">
+  <div class="container">
+    <div class="mag-showcase">
+      <div class="mag-showcase-text reveal-left">
+        <span class="section-label">Core Feature</span>
+        <h2 class="section-title">Grid-Based Magnetic Data Collection</h2>
+        <p class="section-subtitle">Walk around the survey area while MagMapper collects and visualizes magnetic readings in real time.</p>
+
+        <div style="margin-bottom: 24px;">
+          <h4 style="color:#c8e6c9; font-size: 1rem; margin-bottom: 8px;">How It Works</h4>
+          <p style="color: #8aaa8a; font-size: 0.9rem; margin-bottom: 12px;">
+            Tap the <strong style="color:#EF5350;">red record button</strong> to start. As you walk, the app reads your phone's magnetometer and GPS, placing each measurement into the correct grid cell. Cells fill with color as data accumulates:
+          </p>
+          <div class="grid-legend" style="justify-content: flex-start;">
+            <span>Low nT</span>
+            <div class="grid-legend-bar"></div>
+            <span>High nT</span>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <h4 style="color:#c8e6c9; font-size: 1rem; margin-bottom: 8px;">Walking Patterns</h4>
+          <p style="color: #8aaa8a; font-size: 0.9rem;">
+            A strict grid walk is not required! You can walk a <strong>zigzag</strong>, <strong>spiral</strong>, <strong>initial profile line</strong> then criss-cross, or any pattern that covers the area. The app maps your position to the nearest grid cell regardless of your path.
+          </p>
+        </div>
+
+        <div>
+          <h4 style="color:#c8e6c9; font-size: 1rem; margin-bottom: 8px;">Live Dashboard</h4>
+          <p style="color: #8aaa8a; font-size: 0.9rem;">
+            The bottom bar shows <strong>total magnetic intensity</strong> (nT), <strong>compass direction</strong>, and <strong>data point count</strong> in real time. Toggle between Map, Graph, and Model views.
+          </p>
+        </div>
+      </div>
+      <div class="mag-showcase-visual reveal-right">
+        <div class="phone phone-lg">
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <img src="screenshots/Nir/IMG_0164.PNG" alt="Magnetic Grid Data" loading="lazy">
+            </div>
+          </div>
+          <div class="phone-label">Active Survey &mdash; Grid View</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INTERACTIVE WALK DEMO -->
+    <div class="reveal" style="margin-top: 60px; text-align: center;">
+      <p style="color: #6a8a6a; font-size: 0.8rem; margin-bottom: 20px; letter-spacing: 1px; text-transform: uppercase;">Interactive Demo &mdash; Watch a Surveyor Walk &amp; Fill the Grid</p>
+
+      <div class="walk-demo-container">
+        <!-- Left: Data Grid -->
+        <div class="walk-demo-panel">
+          <h5>Magnetic Data Grid</h5>
+          <div class="grid-demo" id="gridDemo"></div>
+          <div class="grid-legend">
+            <span>Low</span>
+            <div class="grid-legend-bar"></div>
+            <span>High</span>
+          </div>
+          <div class="walk-legend">Cells fill as the surveyor walks &mdash; first pass (faint), second pass (solid)</div>
+        </div>
+
+        <!-- Right: Walking Person Canvas -->
+        <div class="walk-demo-panel">
+          <h5>Surveyor Path (top-down view)</h5>
+          <canvas class="walk-canvas" id="walkCanvas" width="280" height="280"></canvas>
+          <div class="walk-legend">
+            <span style="color:#4CAF50;">&#x25CF;</span> surveyor &nbsp;
+            <span style="color:#FFD54F;">&#x25CF;</span> well location &nbsp;
+            <span style="color:rgba(76,175,80,0.3);">&#x2500;</span> path
+          </div>
+        </div>
+      </div>
+
+      <button onclick="restartWalkDemo()" style="margin-top: 16px; background: rgba(76,175,80,0.15); border: 1px solid rgba(76,175,80,0.3); color: #81C784; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; transition: all 0.3s;" onmouseover="this.style.background='rgba(76,175,80,0.25)'" onmouseout="this.style.background='rgba(76,175,80,0.15)'">
+        Replay Animation
+      </button>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ==================== SURVEY FEATURES ==================== -->
+<section id="features">
+  <div class="container">
+    <div class="reveal" style="text-align: center; margin-bottom: 16px;">
+      <span class="section-label">Survey Tabs</span>
+      <h2 class="section-title">Everything You Need<br>in One Survey</h2>
+      <p class="section-subtitle" style="margin: 16px auto 0;">Four tabs give you full control over data collection, documentation, and analysis.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card reveal" role="button" tabindex="0" onclick="this.classList.toggle('expanded')" onkeydown="if(event.key==='Enter')this.classList.toggle('expanded')">
+        <span class="card-icon">&#x1F9F2;</span>
+        <h4>Mag Tab</h4>
+        <p>Real-time magnetic field grid map, interactive graph, and model overlay. Switch between Total Intensity, Horizontal, and Vertical components.</p>
+        <span class="expand-hint"><span class="hint-tap">Tap for more &rarr;</span></span>
+        <div class="card-expand">
+          <p style="margin-top: 12px;">View your data as a <strong>color-coded map</strong>, a <strong>line graph</strong> showing row/column slices, or toggle the <strong>model overlay</strong> to compare measured vs. predicted values. The live dashboard shows current nT reading, compass bearing, and point count.</p>
+        </div>
+      </div>
+
+      <div class="feature-card reveal" role="button" tabindex="0" onclick="this.classList.toggle('expanded')" onkeydown="if(event.key==='Enter')this.classList.toggle('expanded')">
+        <span class="card-icon">&#x1F4DD;</span>
+        <h4>Notes Tab</h4>
+        <p>Record text observations and up to 3 audio notes (60 sec each) to document field conditions and observations.</p>
+        <span class="expand-hint"><span class="hint-tap">Tap for more &rarr;</span></span>
+        <div class="card-expand">
+          <p style="margin-top: 12px;">Describe terrain, weather, obstacles, or anything relevant. Audio notes capture what's hard to type in the field &mdash; observations, hazard warnings, or verbal descriptions of the site. All notes are uploaded with your survey data.</p>
+        </div>
+      </div>
+
+      <div class="feature-card reveal" role="button" tabindex="0" onclick="this.classList.toggle('expanded')" onkeydown="if(event.key==='Enter')this.classList.toggle('expanded')">
+        <span class="card-icon">&#x1F4F7;</span>
+        <h4>Images Tab</h4>
+        <p>Capture up to 6 site photos using your camera or select from your gallery. Document visible infrastructure and terrain.</p>
+        <span class="expand-hint"><span class="hint-tap">Tap for more &rarr;</span></span>
+        <div class="card-expand">
+          <p style="margin-top: 12px;">Photos provide crucial visual context: well casings, pump jacks, surface staining, vegetation changes, or nearby structures. All images are compressed and included in your survey upload to CIRES.</p>
+        </div>
+      </div>
+
+      <div class="feature-card reveal" role="button" tabindex="0" onclick="this.classList.toggle('expanded')" onkeydown="if(event.key==='Enter')this.classList.toggle('expanded')">
+        <span class="card-icon">&#x2699;</span>
+        <h4>Settings Tab</h4>
+        <p>Configure cell size (1&ndash;5 m), grid dimensions (7&ndash;25 cells), sample rate (1/5/10 Hz), and display channel. Export CSV or upload to CIRES.</p>
+        <span class="expand-hint"><span class="hint-tap">Tap for more &rarr;</span></span>
+        <div class="card-expand">
+          <p style="margin-top: 12px;"><strong>Cell Size:</strong> 1&ndash;5 m per cell. <strong>Grid:</strong> 7&times;7 up to 25&times;25 cells. <strong>Samples/Sec:</strong> 1, 5, or 10 Hz. <strong>Display:</strong> Total Intensity, Horizontal, or Vertical. <strong>Export Raw CSV</strong> for all data points or <strong>Export Grid CSV</strong> for cell medians. <strong>Delete Survey</strong> removes all local data.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings phone -->
+    <div class="reveal" style="display:flex; justify-content:center; margin-top:40px; gap: 32px; flex-wrap: wrap;">
+      <div class="phone" style="width: 180px;">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <img src="screenshots/Manoj/Screenshot_20260318-114829.png" alt="Settings Tab" loading="lazy">
+          </div>
+        </div>
+        <div class="phone-label">Settings &amp; Export</div>
+      </div>
+      <div class="phone" style="width: 180px;">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <img src="screenshots/Manoj/Screenshot_20260318-114613.png" alt="Continue or Reset" loading="lazy">
+          </div>
+        </div>
+        <div class="phone-label">Continue or Reset</div>
+      </div>
+      <div class="phone" style="width: 180px;">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <img src="screenshots/Nir/IMG_0168.PNG" alt="Audio Notes" loading="lazy">
+          </div>
+        </div>
+        <div class="phone-label">Audio Notes</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ==================== MODEL & INVERSION ==================== -->
+<section id="model">
+  <div class="container">
+    <div class="model-layout">
+      <div class="reveal-left">
+        <span class="section-label">Advanced</span>
+        <h2 class="section-title">Magnetic Inversion &amp; Modeling</h2>
+        <p class="section-subtitle">MagMapper includes a physics-based inverse modeling algorithm that estimates well depth and magnetic properties from your survey data.</p>
+
+        <div class="model-params">
+          <h4 style="color:#81C784; font-size:0.85rem; margin-bottom: 16px; letter-spacing:1px; text-transform:uppercase;">Model Parameters</h4>
+          <div class="param-row">
+            <span class="param-name">Center (Row, Col)</span>
+            <span class="param-value">6, 6</span>
+          </div>
+          <div class="param-row">
+            <span class="param-name">Diameter</span>
+            <span class="param-value">5 cells</span>
+          </div>
+          <div class="param-row">
+            <span class="param-name">Depth</span>
+            <span class="param-value">1 meter</span>
+          </div>
+          <div class="param-row">
+            <span class="param-name">Strength</span>
+            <span class="param-value">2000 suscept</span>
+          </div>
+          <div class="param-row">
+            <span class="param-name">RMS Fit</span>
+            <span class="param-value" style="color:#FDD835;">4102.24 nT</span>
+          </div>
+        </div>
+
+        <p style="color:#6a8a6a; font-size:0.82rem; margin-top: 16px; line-height: 1.6;">
+          <strong style="color:#8aaa8a;">Two thresholds:</strong> The Model toggle appears once <strong style="color:#8aaa8a;">50%</strong> of the overall grid is filled. To actually run the inversion, you need <strong style="color:#8aaa8a;">~90%</strong> of cells within the selected model window filled (or full coverage if the window extends to a grid edge). Use <strong style="color:#8aaa8a;">Estimate Center</strong> to auto-locate the anomaly peak, then <strong style="color:#8aaa8a;">Calculate Inversion</strong> to fit a dipole model.
+        </p>
+      </div>
+
+      <div class="reveal-right" style="display:flex; justify-content:center; gap: 20px; flex-wrap: wrap;">
+        <div class="phone" style="width: 190px;">
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <img src="screenshots/Nir/IMG_0165.PNG" alt="Model Profile Graph" loading="lazy">
+            </div>
+          </div>
+          <div class="phone-label">Model Profile Graph</div>
+        </div>
+        <div class="phone" style="width: 190px;">
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <img src="screenshots/Manoj/Screenshot_20260318-114433.png" alt="Insufficient Data" loading="lazy">
+            </div>
+          </div>
+          <div class="phone-label">Needs More Data</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider page-break"></div>
+
+<!-- ==================== UPLOAD TO CIRES ==================== -->
+<section id="upload">
+  <div class="container" style="text-align:center;">
+    <div class="reveal">
+      <span class="section-label">Data Submission</span>
+      <h2 class="section-title">Upload to CIRES</h2>
+      <p class="section-subtitle" style="margin: 16px auto 0;">Your survey data contributes to a national database of orphan wells. Upload securely with one tap.</p>
+    </div>
+
+    <div class="upload-flow reveal">
+      <div class="upload-step">
+        <div class="u-icon">&#x1F4E6;</div>
+        <div class="u-label">Package</div>
+        <div class="u-desc">Survey data, photos,<br>audio &amp; notes bundled</div>
+      </div>
+      <div class="upload-arrow">&rarr;</div>
+      <div class="upload-step">
+        <div class="u-icon">&#x1F512;</div>
+        <div class="u-label">Authenticate</div>
+        <div class="u-desc">Secure token<br>verification</div>
+      </div>
+      <div class="upload-arrow">&rarr;</div>
+      <div class="upload-step">
+        <div class="u-icon">&#x2601;</div>
+        <div class="u-label">Upload</div>
+        <div class="u-desc">Encrypted transfer to<br>Google Cloud</div>
+      </div>
+      <div class="upload-arrow">&rarr;</div>
+      <div class="upload-step">
+        <div class="u-icon">&#x2705;</div>
+        <div class="u-label">Confirmed</div>
+        <div class="u-desc">CIRES validates &amp;<br>stores your data</div>
+      </div>
+    </div>
+
+    <div class="reveal" style="margin-top: 32px;">
+      <div class="phone" style="width:200px; margin: 0 auto;">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <img src="screenshots/Manoj/Screenshot_20260318-114302.png" alt="Survey List" loading="lazy">
+          </div>
+        </div>
+        <div class="phone-label">CIRES badge confirms upload</div>
+      </div>
+    </div>
+
+    <p class="reveal" style="color:#6a8a6a; font-size:0.85rem; max-width:500px; margin: 24px auto 0; line-height: 1.7;">
+      Find <strong style="color:#8aaa8a;">"Upload Survey Update to CIRES"</strong> in the Settings tab. Updated surveys can be re-uploaded &mdash; the CIRES badge on your survey list confirms successful submission.
+    </p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ==================== ACHIEVEMENTS & LEADERBOARD ==================== -->
+<section id="awards">
+  <div class="container" style="text-align:center;">
+    <div class="reveal">
+      <span class="section-label">Gamification</span>
+      <h2 class="section-title">Earn Achievements.<br>Climb the Leaderboard.</h2>
+      <p class="section-subtitle" style="margin: 16px auto 0;">MagMapper rewards your citizen science contributions with badges, medals, and competitive rankings.</p>
+    </div>
+
+    <div class="achievements-row reveal">
+      <div class="achievement">
+        <span class="a-icon">&#x1F9F2;</span>
+        <div class="a-name">Mag Cell Explorer</div>
+        <div class="a-desc">Fill grid cells<br>with magnetic data</div>
+        <div class="medal-track">
+          <div class="medal" style="background:rgba(205,127,50,0.3); border-color:rgb(205,127,50);">B</div>
+          <div class="medal" style="background:rgba(192,192,192,0.3); border-color:silver;">S</div>
+          <div class="medal" style="background:rgba(255,215,0,0.3); border-color:gold;">G</div>
+          <div class="medal" style="background:rgba(180,210,230,0.3); border-color:#b4d6e6;">P</div>
+        </div>
+      </div>
+      <div class="achievement">
+        <span class="a-icon">&#x1F4DD;</span>
+        <div class="a-name">Field Note Writer</div>
+        <div class="a-desc">Write detailed<br>field observations</div>
+        <div class="medal-track">
+          <div class="medal" style="background:rgba(205,127,50,0.3); border-color:rgb(205,127,50);">B</div>
+          <div class="medal" style="background:rgba(192,192,192,0.3); border-color:silver;">S</div>
+          <div class="medal" style="background:rgba(255,215,0,0.3); border-color:gold;">G</div>
+          <div class="medal" style="background:rgba(180,210,230,0.3); border-color:#b4d6e6;">P</div>
+        </div>
+      </div>
+      <div class="achievement">
+        <span class="a-icon">&#x1F4F8;</span>
+        <div class="a-name">Photo Collector</div>
+        <div class="a-desc">Capture site<br>documentation photos</div>
+        <div class="medal-track">
+          <div class="medal" style="background:rgba(205,127,50,0.3); border-color:rgb(205,127,50);">B</div>
+          <div class="medal" style="background:rgba(192,192,192,0.3); border-color:silver;">S</div>
+          <div class="medal" style="background:rgba(255,215,0,0.3); border-color:gold;">G</div>
+          <div class="medal" style="background:rgba(180,210,230,0.3); border-color:#b4d6e6;">P</div>
+        </div>
+      </div>
+      <div class="achievement">
+        <span class="a-icon">&#x1F399;</span>
+        <div class="a-name">Audio Note Taker</div>
+        <div class="a-desc">Record verbal<br>field observations</div>
+        <div class="medal-track">
+          <div class="medal" style="background:rgba(205,127,50,0.3); border-color:rgb(205,127,50);">B</div>
+          <div class="medal" style="background:rgba(192,192,192,0.3); border-color:silver;">S</div>
+          <div class="medal" style="background:rgba(255,215,0,0.3); border-color:gold;">G</div>
+          <div class="medal" style="background:rgba(180,210,230,0.3); border-color:#b4d6e6;">P</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal" style="display:flex; justify-content:center; margin-top:40px; gap: 32px; flex-wrap: wrap;">
+      <div class="phone" style="width: 190px;">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <img src="screenshots/Nir/IMG_0162.PNG" alt="Achievements" loading="lazy">
+          </div>
+        </div>
+        <div class="phone-label">Achievements</div>
+      </div>
+      <div class="phone" style="width: 190px;">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <img src="screenshots/Nir/IMG_0163.PNG" alt="Leaderboard" loading="lazy">
+          </div>
+        </div>
+        <div class="phone-label">Leaderboard</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ==================== PRO TIPS ==================== -->
+<section id="tips">
+  <div class="container">
+    <div class="reveal" style="text-align:center; margin-bottom: 8px;">
+      <span class="section-label">Expert Advice</span>
+      <h2 class="section-title">Pro Tips for Quality Surveys</h2>
+    </div>
+
+    <div class="tips-grid">
+      <div class="tip reveal">
+        <span class="tip-icon">&#x1F504;</span>
+        <h5>Calibrate First</h5>
+        <p>Wave your phone in a figure-8 pattern before each survey. MagMapper will prompt you if calibration is needed.</p>
+      </div>
+      <div class="tip reveal">
+        <span class="tip-icon">&#x1F6B6;</span>
+        <h5>Walk Freely</h5>
+        <p>Zigzag, spiral, or criss-cross &mdash; any pattern works. Just cover the area at a steady pace so cells fill evenly.</p>
+      </div>
+      <div class="tip reveal">
+        <span class="tip-icon">&#x1F4F1;</span>
+        <h5>Hold Steady</h5>
+        <p>Keep your phone at a consistent height (waist level works well). Avoid tilting or rotating during recording.</p>
+      </div>
+      <div class="tip reveal">
+        <span class="tip-icon">&#x1F4CA;</span>
+        <h5>Fill the Grid</h5>
+        <p>The model toggle appears at 50% coverage, but inversion needs ~90% of the model window filled. Keep walking!</p>
+      </div>
+      <div class="tip reveal">
+        <span class="tip-icon">&#x1F4F7;</span>
+        <h5>Document Everything</h5>
+        <p>Add photos, notes, and audio. Visual context helps researchers validate your magnetic data.</p>
+      </div>
+      <div class="tip reveal">
+        <span class="tip-icon">&#x1F4BE;</span>
+        <h5>Export &amp; Upload</h5>
+        <p>Use Export CSV for your own analysis. Upload to CIRES to contribute to the national orphan wells database.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ==================== FOOTER ==================== -->
+<footer>
+  <div class="container">
+    <div style="margin-bottom: 16px;">
+      <img src="assets/icons/app_icon.png" alt="MagMapper" style="width:48px; height:48px; border-radius:10px; opacity:0.7;">
+    </div>
+    <div class="footer-logos">
+      <span>CIRES</span>
+      <span>&bull;</span>
+      <span>University of Colorado Boulder</span>
+      <span>&bull;</span>
+      <span>U.S. Department of Energy</span>
+    </div>
+    <p>MagMapper Quick User Guide &bull; March 2026<br>
+      Questions? <a href="mailto:magmapper@colorado.edu">magmapper@colorado.edu</a></p>
+    <p style="margin-top: 16px; color: #3a5a3a;">Available on iOS (TestFlight) &amp; Android</p>
+  </div>
+</footer>
+
+<!-- ==================== JAVASCRIPT ==================== -->
+<script>
+// === Scroll-to function ===
+function scrollTo(selector) {
+  document.querySelector(selector).scrollIntoView({ behavior: 'smooth' });
+}
+
+// === Intersection Observer for reveal animations ===
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => {
+        entry.target.classList.add('visible');
+      }, (entry.target.dataset.delay || 0) * 100);
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach((el, i) => {
+  el.dataset.delay = i % 4;
+  observer.observe(el);
+});
+
+// === Nav dot + mobile link active state ===
+const sections = document.querySelectorAll('section[id]');
+const dots = document.querySelectorAll('.nav-dot');
+const navLinks = document.querySelectorAll('.nav-links a');
+const mobileLinks = document.querySelectorAll('.nav-mobile-links a');
+
+const sectionObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      const sectionIds = ['hero','what','workflow','collecting','features','model','upload','awards','tips'];
+      const idx = sectionIds.indexOf(id);
+      dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+      navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id));
+      mobileLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id));
+    }
+  });
+}, { threshold: 0.3 });
+
+sections.forEach(s => sectionObserver.observe(s));
+
+// === Floating particles ===
+const particlesEl = document.getElementById('particles');
+for (let i = 0; i < 30; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.style.left = Math.random() * 100 + '%';
+  p.style.width = p.style.height = (2 + Math.random() * 4) + 'px';
+  p.style.animationDuration = (15 + Math.random() * 25) + 's';
+  p.style.animationDelay = Math.random() * 20 + 's';
+  particlesEl.appendChild(p);
+}
+
+// === GRID + WALK DEMO ===
+const gridDemo = document.getElementById('gridDemo');
+const walkCanvas = document.getElementById('walkCanvas');
+const ctx = walkCanvas.getContext('2d');
+const G = 11; // grid size
+const cells = [];
+let walkAnimId = null;
+let walkStarted = false;
+
+// Create grid cells
+for (let r = 0; r < G; r++) {
+  for (let c = 0; c < G; c++) {
+    const cell = document.createElement('div');
+    cell.className = 'grid-cell';
+    gridDemo.appendChild(cell);
+    cells.push({ el: cell, r, c, visits: 0 });
+  }
+}
+
+// Magnetic anomaly color (dipole centered at 5,5)
+function magColor(r, c, alpha) {
+  const dr = r - 5, dc = c - 5;
+  const dist = Math.sqrt(dr*dr + dc*dc);
+  const val = Math.max(0, 1 - dist / 6);
+  const hue = (1 - val) * 240;
+  const sat = 60 + val * 30;
+  const light = 25 + val * 40;
+  return `hsla(${hue}, ${sat}%, ${light}%, ${alpha})`;
+}
+
+// Generate a surveyor walk path: start with a spiral, then zigzag criss-cross
+function generateWalkPath() {
+  const path = [];
+  const cellW = 280 / G;
+
+  // Phase 1: Spiral inward
+  let visited = new Set();
+  let r = 0, c = 0;
+  let dr = 0, dc = 1; // start going right
+  for (let i = 0; i < 60; i++) {
+    if (r >= 0 && r < G && c >= 0 && c < G) {
+      path.push({ r, c, x: (c + 0.5) * cellW, y: (r + 0.5) * cellW });
+      visited.add(r * G + c);
+    }
+    let nr = r + dr, nc = c + dc;
+    if (nr < 0 || nr >= G || nc < 0 || nc >= G || visited.has(nr * G + nc)) {
+      // Turn right
+      [dr, dc] = [dc, -dr];
+      nr = r + dr; nc = c + dc;
+    }
+    r = nr; c = nc;
+  }
+
+  // Phase 2: Zigzag to fill remaining
+  for (let row = 0; row < G; row++) {
+    if (row % 2 === 0) {
+      for (let col = 0; col < G; col++) {
+        if (!visited.has(row * G + col)) {
+          path.push({ r: row, c: col, x: (col + 0.5) * cellW, y: (row + 0.5) * cellW });
+          visited.add(row * G + col);
+        }
+      }
+    } else {
+      for (let col = G - 1; col >= 0; col--) {
+        if (!visited.has(row * G + col)) {
+          path.push({ r: row, c: col, x: (col + 0.5) * cellW, y: (row + 0.5) * cellW });
+          visited.add(row * G + col);
+        }
+      }
+    }
+  }
+
+  return path;
+}
+
+function drawWalkFrame(pathSoFar, currentPos, fullPath) {
+  const w = 280, h = 280;
+  const cellW = w / G;
+  ctx.clearRect(0, 0, w, h);
+
+  // Draw grid lines
+  ctx.strokeStyle = 'rgba(76, 175, 80, 0.08)';
+  ctx.lineWidth = 0.5;
+  for (let i = 0; i <= G; i++) {
+    ctx.beginPath(); ctx.moveTo(i * cellW, 0); ctx.lineTo(i * cellW, h); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, i * cellW); ctx.lineTo(w, i * cellW); ctx.stroke();
+  }
+
+  // Draw well marker at center
+  ctx.fillStyle = '#FFD54F';
+  ctx.beginPath();
+  ctx.arc(5.5 * cellW, 5.5 * cellW, 5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = 'rgba(255, 213, 79, 0.15)';
+  ctx.beginPath();
+  ctx.arc(5.5 * cellW, 5.5 * cellW, 20, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Draw path trail
+  if (pathSoFar.length > 1) {
+    ctx.strokeStyle = 'rgba(76, 175, 80, 0.3)';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(pathSoFar[0].x, pathSoFar[0].y);
+    for (let i = 1; i < pathSoFar.length; i++) {
+      ctx.lineTo(pathSoFar[i].x, pathSoFar[i].y);
+    }
+    ctx.stroke();
+  }
+
+  // Draw surveyor dot
+  if (currentPos) {
+    // Glow
+    ctx.fillStyle = 'rgba(76, 175, 80, 0.25)';
+    ctx.beginPath();
+    ctx.arc(currentPos.x, currentPos.y, 10, 0, Math.PI * 2);
+    ctx.fill();
+    // Dot
+    ctx.fillStyle = '#4CAF50';
+    ctx.beginPath();
+    ctx.arc(currentPos.x, currentPos.y, 5, 0, Math.PI * 2);
+    ctx.fill();
+    // White center
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(currentPos.x, currentPos.y, 2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+function runWalkDemo() {
+  // Reset
+  cells.forEach(c => {
+    c.visits = 0;
+    c.el.className = 'grid-cell';
+    c.el.style.background = '';
+  });
+  ctx.clearRect(0, 0, 280, 280);
+
+  const path = generateWalkPath();
+  let step = 0;
+  const pathHistory = [];
+
+  function tick() {
+    if (step >= path.length) {
+      // Final frame
+      drawWalkFrame(pathHistory, null, path);
+      return;
+    }
+
+    const p = path[step];
+    pathHistory.push(p);
+
+    // Update grid cell
+    const cellIdx = p.r * G + p.c;
+    const cell = cells[cellIdx];
+    cell.visits++;
+    if (cell.visits === 1) {
+      cell.el.style.background = magColor(cell.r, cell.c, 0.5);
+      cell.el.className = 'grid-cell half-filled';
+    } else if (cell.visits >= 2) {
+      cell.el.style.background = magColor(cell.r, cell.c, 1.0);
+      cell.el.className = 'grid-cell filled';
+    }
+
+    // Draw walk
+    drawWalkFrame(pathHistory, p, path);
+
+    step++;
+    walkAnimId = setTimeout(tick, 60);
+  }
+
+  tick();
+}
+
+function restartWalkDemo() {
+  if (walkAnimId) clearTimeout(walkAnimId);
+  runWalkDemo();
+}
+
+// Start demo when scrolled into view
+const demoObserver = new IntersectionObserver((entries) => {
+  if (entries[0].isIntersecting && !walkStarted) {
+    walkStarted = true;
+    setTimeout(runWalkDemo, 400);
+  }
+}, { threshold: 0.4 });
+demoObserver.observe(document.querySelector('.walk-demo-container'));
+
+// === LIGHTBOX ===
+function openLightbox(src) {
+  const lb = document.getElementById('lightbox');
+  document.getElementById('lightboxImg').src = src;
+  lb.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  const lb = document.getElementById('lightbox');
+  lb.classList.remove('active');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeLightbox();
+});
+// Attach click handlers to all phone screenshots
+document.querySelectorAll('.phone-screen img').forEach(img => {
+  img.addEventListener('click', () => openLightbox(img.src));
+});
+</script>
+
+</body>
+</html>
