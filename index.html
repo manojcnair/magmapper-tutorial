@@ -365,7 +365,7 @@
   }
   .stat-label {
     font-size: 0.72rem; color: #6a8a6a;
-    text-transform: uppercase; letter-spacing: 1px;
+    letter-spacing: 1px;
   }
 
   /* ===== WORKFLOW TIMELINE ===== */
@@ -487,8 +487,8 @@
   }
   .walk-demo-panel {
     flex: 1;
-    background: rgba(15, 30, 20, 0.7);
-    border: 1px solid rgba(76, 175, 80, 0.15);
+    background: transparent;
+    border: none;
     border-radius: 16px;
     padding: 20px;
     display: flex;
@@ -503,7 +503,7 @@
   .walk-canvas {
     width: 280px; height: 280px;
     border-radius: 8px;
-    background: rgba(10, 20, 15, 0.8);
+    background: rgba(10, 20, 15, 0.3);
     border: 1px solid rgba(76, 175, 80, 0.1);
   }
   .walk-legend {
@@ -520,12 +520,12 @@
     width: 280px; height: 280px;
     border-radius: 8px;
     overflow: hidden;
-    background: rgba(10, 20, 15, 0.8);
+    background: rgba(10, 20, 15, 0.3);
     border: 1px solid rgba(76, 175, 80, 0.1);
   }
   .grid-cell {
     aspect-ratio: 1;
-    background: rgba(30, 50, 35, 0.4);
+    background: rgba(30, 50, 35, 0.2);
     transition: background 0.4s ease, opacity 0.4s ease;
     position: relative;
   }
@@ -688,11 +688,12 @@
   /* ===== MAG SHOWCASE ===== */
   .mag-showcase {
     display: flex;
-    gap: 48px;
-    align-items: center;
+    flex-direction: column;
+    gap: 32px;
+    align-items: stretch;
   }
   .mag-showcase-text { flex: 1; }
-  .mag-showcase-visual { flex: 0 0 auto; }
+  .mag-showcase-visual { flex: 0 0 auto; text-align: center; }
 
   /* ===== FOOTER ===== */
   footer {
@@ -774,6 +775,8 @@
 <nav class="nav" aria-label="Main navigation">
   <div class="nav-inner">
     <div class="nav-logo">
+      <img src="assets/icons/CIRES_LoGo.png" alt="CIRES Logo" style="width:28px; height:28px; border-radius:4px;">
+      <span style="color:#6a8a6a; font-size:0.7rem; margin: 0 -4px;">&times;</span>
       <img src="assets/icons/app_icon.png" alt="MagMapper Logo">
       <span>MagMapper</span>
     </div>
@@ -827,20 +830,19 @@
       <div class="what-text reveal-left">
         <span class="section-label">About the App</span>
         <h2 class="section-title">What is MagMapper?</h2>
-        <p>MagMapper is a free mobile app that turns your smartphone into a magnetic field survey instrument. Metal well casings from abandoned oil and gas wells create magnetic anomalies &mdash; often <strong>thousands of nanoTesla (nT)</strong> above background levels &mdash; that your phone's built-in magnetometer can detect.</p>
-        <p>The app supports the <strong>U.S. Department of Energy's</strong> Undocumented Orphan Well Research Program, funded through the Bipartisan Infrastructure Law's <strong>$4.7 billion</strong> allocation for well remediation.</p>
+        <p>The MagMapper app enables citizen scientists to detect and verify the locations of undocumented orphan wells using only a smartphone. Of the estimated <strong>3.5 million</strong> abandoned oil and gas wells across the United States, only <strong>2&ndash;3%</strong> are adequately documented. MagMapper provides a low-cost detection solution by measuring magnetic anomalies created by buried metal well casings.</p>
         <div class="stat-row">
           <div class="stat">
-            <div class="stat-num">~50,000</div>
-            <div class="stat-label">nT Background Field</div>
+            <div class="stat-num">3.5M+</div>
+            <div class="stat-label">ABANDONED WELLS</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num">2&ndash;3%</div>
+            <div class="stat-label">DOCUMENTED</div>
           </div>
           <div class="stat">
             <div class="stat-num">1000s</div>
-            <div class="stat-label">nT Well Anomaly</div>
-          </div>
-          <div class="stat">
-            <div class="stat-num">$4.7B</div>
-            <div class="stat-label">DOE Funding</div>
+            <div class="stat-label">nT WELL ANOMALY</div>
           </div>
         </div>
       </div>
@@ -848,10 +850,10 @@
         <div class="phone phone-lg">
           <div class="phone-frame">
             <div class="phone-screen">
-              <img src="screenshots/Manoj/Screenshot_20260318-114001.png" alt="MagMapper Sign In" loading="lazy">
+              <img src="screenshots/Nir/IMG_0164.PNG" alt="MagMapper Grid View" loading="lazy">
             </div>
           </div>
-          <div class="phone-label">Sign In Screen</div>
+          <div class="phone-label">Active Survey &mdash; Grid View</div>
         </div>
       </div>
     </div>
@@ -888,7 +890,7 @@
         <div class="step-content">
           <div class="step-icon">&#x1F513;</div>
           <div class="step-title">Sign In with Google</div>
-          <div class="step-desc">Open MagMapper and tap <strong>"Sign In with Google"</strong>. Your account links your surveys to our secure cloud. One tap &mdash; no passwords to remember.</div>
+          <div class="step-desc">Open MagMapper and tap <strong>"Sign In with Google"</strong>. One-tap authentication links your identity for secure uploads later. No passwords to remember.</div>
         </div>
         <div class="step-number">1</div>
         <div class="step-phone">
@@ -966,13 +968,6 @@
                 </div>
               </div>
             </div>
-            <div class="phone" style="width:140px">
-              <div class="phone-frame">
-                <div class="phone-screen">
-                  <img src="screenshots/Manoj/Screenshot_20260318-114302.png" alt="Surveys List" loading="lazy">
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -1006,7 +1001,7 @@
         <div style="margin-bottom: 16px;">
           <h4 style="color:#c8e6c9; font-size: 1rem; margin-bottom: 8px;">Walking Patterns</h4>
           <p style="color: #8aaa8a; font-size: 0.9rem;">
-            A strict grid walk is not required! You can walk a <strong>zigzag</strong>, <strong>spiral</strong>, <strong>initial profile line</strong> then criss-cross, or any pattern that covers the area. The app maps your position to the nearest grid cell regardless of your path.
+            Grid, zigzag, spiral &mdash; any pattern that covers the area works. The app maps your position to the nearest grid cell regardless of your walking path.
           </p>
         </div>
 
@@ -1016,14 +1011,17 @@
             The bottom bar shows <strong>total magnetic intensity</strong> (nT), <strong>compass direction</strong>, and <strong>data point count</strong> in real time. Toggle between Map, Graph, and Model views.
           </p>
         </div>
+
+        <div>
+          <h4 style="color:#c8e6c9; font-size: 1rem; margin-bottom: 8px;">Data Quality &amp; Progress</h4>
+          <p style="color: #8aaa8a; font-size: 0.9rem;">
+            Cells with fewer than 50 data points are shown as <strong>smaller rectangles</strong> &mdash; walk back to fill them. A green progress bar tracks grid completion toward the <strong>50% threshold</strong> for the Show Model toggle.
+          </p>
+        </div>
       </div>
-      <div class="mag-showcase-visual reveal-right">
-        <div class="phone phone-lg">
-          <div class="phone-frame">
-            <div class="phone-screen">
-              <img src="screenshots/Nir/IMG_0164.PNG" alt="Magnetic Grid Data" loading="lazy">
-            </div>
-          </div>
+      <div class="mag-showcase-visual reveal-right" style="display: flex; justify-content: center;">
+        <div style="max-width: 600px; border-radius: 16px; overflow: hidden; border: 1px solid rgba(76, 175, 80, 0.2);">
+          <img src="screenshots/Gemini_Generated_Image_ejdfmaejdfmaejdf.png" alt="Magnetic Grid Data" loading="lazy" style="width: 100%; display: block;">
           <div class="phone-label">Active Survey &mdash; Grid View</div>
         </div>
       </div>
@@ -1123,18 +1121,18 @@
       <div class="phone" style="width: 180px;">
         <div class="phone-frame">
           <div class="phone-screen">
-            <img src="screenshots/Manoj/Screenshot_20260318-114829.png" alt="Settings Tab" loading="lazy">
+            <img src="screenshots/Nir/IMG_0164.PNG" alt="Mag Tab" loading="lazy">
           </div>
         </div>
-        <div class="phone-label">Settings &amp; Export</div>
+        <div class="phone-label">Mag Tab</div>
       </div>
       <div class="phone" style="width: 180px;">
         <div class="phone-frame">
           <div class="phone-screen">
-            <img src="screenshots/Manoj/Screenshot_20260318-114613.png" alt="Continue or Reset" loading="lazy">
+            <img src="screenshots/Nir/IMG_0169.PNG" alt="Images Tab" loading="lazy">
           </div>
         </div>
-        <div class="phone-label">Continue or Reset</div>
+        <div class="phone-label">Images Tab</div>
       </div>
       <div class="phone" style="width: 180px;">
         <div class="phone-frame">
@@ -1143,6 +1141,14 @@
           </div>
         </div>
         <div class="phone-label">Audio Notes</div>
+      </div>
+      <div class="phone" style="width: 180px;">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <img src="screenshots/Manoj/Screenshot_20260318-114829.png" alt="Settings Tab" loading="lazy">
+          </div>
+        </div>
+        <div class="phone-label">Settings &amp; Export</div>
       </div>
     </div>
   </div>
@@ -1160,7 +1166,7 @@
         <p class="section-subtitle">MagMapper includes a physics-based inverse modeling algorithm that estimates well depth and magnetic properties from your survey data.</p>
 
         <div class="model-params">
-          <h4 style="color:#81C784; font-size:0.85rem; margin-bottom: 16px; letter-spacing:1px; text-transform:uppercase;">Model Parameters</h4>
+          <h4 style="color:#81C784; font-size:0.85rem; margin-bottom: 16px; letter-spacing:1px; text-transform:uppercase;">Model Parameters (example)</h4>
           <div class="param-row">
             <span class="param-name">Center (Row, Col)</span>
             <span class="param-value">6, 6</span>
@@ -1175,7 +1181,7 @@
           </div>
           <div class="param-row">
             <span class="param-name">Strength</span>
-            <span class="param-value">2000 suscept</span>
+            <span class="param-value">2000 susceptibility</span>
           </div>
           <div class="param-row">
             <span class="param-name">RMS Fit</span>
@@ -1184,26 +1190,50 @@
         </div>
 
         <p style="color:#6a8a6a; font-size:0.82rem; margin-top: 16px; line-height: 1.6;">
-          <strong style="color:#8aaa8a;">Two thresholds:</strong> The Model toggle appears once <strong style="color:#8aaa8a;">50%</strong> of the overall grid is filled. To actually run the inversion, you need <strong style="color:#8aaa8a;">~90%</strong> of cells within the selected model window filled (or full coverage if the window extends to a grid edge). Use <strong style="color:#8aaa8a;">Estimate Center</strong> to auto-locate the anomaly peak, then <strong style="color:#8aaa8a;">Calculate Inversion</strong> to fit a dipole model.
+          <strong style="color:#8aaa8a;">Two thresholds:</strong> The Model toggle appears once <strong style="color:#8aaa8a;">50%</strong> of the overall grid is filled. To run the inversion, <strong style="color:#8aaa8a;">~90%</strong> of cells within the selected model window must be filled (or full coverage if the window extends to a grid edge).
         </p>
+
+        <p style="color:#6a8a6a; font-size:0.82rem; margin-top: 12px; line-height: 1.6;">
+          <strong style="color:#8aaa8a;">&ldquo;Insufficient Data&rdquo;</strong> appears when &lt;90% of the model window cells are filled. Fix: walk more within the model area, or reduce the diameter.
+        </p>
+
+        <!-- Screenshots below text -->
+        <div style="display:flex; justify-content:flex-start; gap: 16px; flex-wrap: wrap; margin-top: 24px;">
+          <div class="phone" style="width: 160px;">
+            <div class="phone-frame">
+              <div class="phone-screen">
+                <img src="screenshots/Nir/IMG_0165.PNG" alt="Model Profile Graph" loading="lazy">
+              </div>
+            </div>
+            <div class="phone-label">Profile Graph</div>
+          </div>
+          <div class="phone" style="width: 160px;">
+            <div class="phone-frame">
+              <div class="phone-screen">
+                <img src="screenshots/Manoj/Screenshot_20260318-114344.png" alt="Grid with Model View" loading="lazy">
+              </div>
+            </div>
+            <div class="phone-label">Grid + Model</div>
+          </div>
+          <div class="phone" style="width: 160px;">
+            <div class="phone-frame">
+              <div class="phone-screen">
+                <img src="screenshots/Manoj/Screenshot_20260318-114433.png" alt="Insufficient Data" loading="lazy">
+              </div>
+            </div>
+            <div class="phone-label">Needs More Data</div>
+          </div>
+        </div>
       </div>
 
-      <div class="reveal-right" style="display:flex; justify-content:center; gap: 20px; flex-wrap: wrap;">
-        <div class="phone" style="width: 190px;">
+      <div class="reveal-right" style="display:flex; justify-content:center;">
+        <div class="phone phone-lg">
           <div class="phone-frame">
             <div class="phone-screen">
-              <img src="screenshots/Nir/IMG_0165.PNG" alt="Model Profile Graph" loading="lazy">
+              <img src="screenshots/Nir/IMG_0166.PNG" alt="Model Parameters Screen" loading="lazy">
             </div>
           </div>
-          <div class="phone-label">Model Profile Graph</div>
-        </div>
-        <div class="phone" style="width: 190px;">
-          <div class="phone-frame">
-            <div class="phone-screen">
-              <img src="screenshots/Manoj/Screenshot_20260318-114433.png" alt="Insufficient Data" loading="lazy">
-            </div>
-          </div>
-          <div class="phone-label">Needs More Data</div>
+          <div class="phone-label">Model Parameters</div>
         </div>
       </div>
     </div>
@@ -1219,32 +1249,6 @@
       <span class="section-label">Data Submission</span>
       <h2 class="section-title">Upload to CIRES</h2>
       <p class="section-subtitle" style="margin: 16px auto 0;">Your survey data contributes to a national database of orphan wells. Upload securely with one tap.</p>
-    </div>
-
-    <div class="upload-flow reveal">
-      <div class="upload-step">
-        <div class="u-icon">&#x1F4E6;</div>
-        <div class="u-label">Package</div>
-        <div class="u-desc">Survey data, photos,<br>audio &amp; notes bundled</div>
-      </div>
-      <div class="upload-arrow">&rarr;</div>
-      <div class="upload-step">
-        <div class="u-icon">&#x1F512;</div>
-        <div class="u-label">Authenticate</div>
-        <div class="u-desc">Secure token<br>verification</div>
-      </div>
-      <div class="upload-arrow">&rarr;</div>
-      <div class="upload-step">
-        <div class="u-icon">&#x2601;</div>
-        <div class="u-label">Upload</div>
-        <div class="u-desc">Encrypted transfer to<br>Google Cloud</div>
-      </div>
-      <div class="upload-arrow">&rarr;</div>
-      <div class="upload-step">
-        <div class="u-icon">&#x2705;</div>
-        <div class="u-label">Confirmed</div>
-        <div class="u-desc">CIRES validates &amp;<br>stores your data</div>
-      </div>
     </div>
 
     <div class="reveal" style="margin-top: 32px;">
@@ -1362,7 +1366,7 @@
       <div class="tip reveal">
         <span class="tip-icon">&#x1F6B6;</span>
         <h5>Walk Freely</h5>
-        <p>Zigzag, spiral, or criss-cross &mdash; any pattern works. Just cover the area at a steady pace so cells fill evenly.</p>
+        <p>Grid, zigzag, spiral &mdash; any pattern works. Just cover the area at a steady pace so cells fill evenly.</p>
       </div>
       <div class="tip reveal">
         <span class="tip-icon">&#x1F4F1;</span>
@@ -1400,10 +1404,10 @@
       <span>&bull;</span>
       <span>University of Colorado Boulder</span>
       <span>&bull;</span>
-      <span>U.S. Department of Energy</span>
+      <span>Funded by the U.S. Department of Energy</span>
     </div>
     <p>MagMapper Quick User Guide &bull; March 2026<br>
-      Questions? <a href="mailto:magmapper@colorado.edu">magmapper@colorado.edu</a></p>
+      <a href="https://magmapper.app" style="color:#4CAF50;">magmapper.app</a> &bull; <a href="mailto:magmapper@colorado.edu">magmapper@colorado.edu</a></p>
     <p style="margin-top: 16px; color: #3a5a3a;">Available on iOS (TestFlight) &amp; Android</p>
   </div>
 </footer>
