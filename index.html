@@ -1153,7 +1153,7 @@
         <p>Capture up to 6 site photos using your camera or select from your gallery. Document visible infrastructure and terrain.</p>
         <span class="expand-hint"><span class="hint-tap">Tap for more &rarr;</span></span>
         <div class="card-expand">
-          <p style="margin-top: 12px;">Photos provide crucial visual context: well casings, pump jacks, surface staining, vegetation changes, or nearby structures. All images are compressed and included in your survey upload to CIRES.</p>
+          <p style="margin-top: 12px;">Photos provide crucial visual context: well casings, pump jacks, surface staining, vegetation changes, or nearby structures. All images are included in your survey upload to CIRES.</p>
         </div>
       </div>
 
@@ -1510,7 +1510,7 @@ for (let r = 0; r < G; r++) {
   }
 }
 
-// Magnetic anomaly color (dipole centered at 5,5)
+// Magnetic anomaly color (monopole centered at 5,5)
 function magColor(r, c, alpha) {
   const dr = r - 5, dc = c - 5;
   const dist = Math.sqrt(dr*dr + dc*dc);
@@ -1752,7 +1752,7 @@ const wellR = 15, wellC = 15;
 const RING_SKIP = 3; // walk every 3rd ring (sparse recon)
 const ANOMALY_THRESHOLD = 0.12; // signal level that triggers infill
 
-// Magnetic anomaly: dipole falloff, radius ~4 cells = 20m
+// Magnetic anomaly: monopole falloff, radius ~4 cells = 20m
 function wellSignal(r, c) {
   const dr = r - wellR, dc = c - wellC;
   const dist = Math.sqrt(dr * dr + dc * dc);
