@@ -718,8 +718,12 @@
   }
 
   /* ===== RESPONSIVE ===== */
+  #strategy .container > div[style*="grid-template-columns"] {
+    /* allow responsive override */
+  }
   @media (max-width: 900px) {
     .what-grid, .model-layout { grid-template-columns: 1fr; }
+    #strategy .container > div[style] { display: block !important; }
     .mag-showcase { flex-direction: column; }
     .walk-demo-container { flex-direction: column; }
     .timeline::before { left: 24px; }
@@ -786,6 +790,7 @@
       <button class="nav-dot" onclick="scrollTo('#workflow')" aria-label="Get Started"><span class="tooltip">Get Started</span></button>
       <button class="nav-dot" onclick="scrollTo('#collecting')" aria-label="Collect Data"><span class="tooltip">Collect</span></button>
       <button class="nav-dot" onclick="scrollTo('#features')" aria-label="Features"><span class="tooltip">Features</span></button>
+      <button class="nav-dot" onclick="scrollTo('#strategy')" aria-label="Strategy"><span class="tooltip">Strategy</span></button>
       <button class="nav-dot" onclick="scrollTo('#model')" aria-label="Model"><span class="tooltip">Model</span></button>
       <button class="nav-dot" onclick="scrollTo('#upload')" aria-label="Upload"><span class="tooltip">Upload</span></button>
       <button class="nav-dot" onclick="scrollTo('#awards')" aria-label="Awards"><span class="tooltip">Awards</span></button>
@@ -797,6 +802,7 @@
       <a href="#workflow">Start</a>
       <a href="#collecting">Collect</a>
       <a href="#features">Features</a>
+      <a href="#strategy">Strategy</a>
       <a href="#model">Model</a>
       <a href="#upload">Upload</a>
       <a href="#awards">Awards</a>
@@ -806,6 +812,7 @@
       <a href="#what">About</a>
       <a href="#workflow">Start</a>
       <a href="#collecting">Collect</a>
+      <a href="#strategy">Strategy</a>
       <a href="#upload">Upload</a>
     </div>
   </div>
@@ -1156,6 +1163,66 @@
 
 <div class="divider"></div>
 
+<!-- ==================== SURVEY STRATEGY ==================== -->
+<section id="strategy">
+  <div class="container">
+    <div class="reveal" style="text-align:center; margin-bottom: 48px;">
+      <span class="section-label">Field Strategy</span>
+      <h2 class="section-title">Finding the Well:<br>Outside-In Spiral</h2>
+      <p class="section-subtitle" style="margin: 16px auto 0;">Documented GPS locations can be off by meters or even tens of meters. Use a reconnaissance spiral to find the actual anomaly.</p>
+    </div>
+
+    <div class="reveal" style="display:grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start;">
+      <!-- Left: Strategy explanation -->
+      <div>
+        <h4 style="color:#c8e6c9; font-size: 1rem; margin-bottom: 12px;">The Problem</h4>
+        <p style="color: #8aaa8a; font-size: 0.9rem; margin-bottom: 24px; line-height: 1.7;">
+          Of the estimated 3.5 million abandoned wells, most have only approximate GPS coordinates. The actual well casing may be <strong>5&ndash;30 meters</strong> from the documented location &mdash; buried under vegetation with no surface expression.
+        </p>
+
+        <h4 style="color:#c8e6c9; font-size: 1rem; margin-bottom: 12px;">The Solution: Outside-In Spiral</h4>
+        <p style="color: #8aaa8a; font-size: 0.9rem; margin-bottom: 16px; line-height: 1.7;">
+          Inspired by <strong>animal foraging strategies</strong> (desert ants, dung beetles), where creatures systematically search an area using an Archimedean spiral &mdash; guaranteeing full coverage with no gaps:
+        </p>
+        <ol style="color: #8aaa8a; font-size: 0.88rem; line-height: 1.8; padding-left: 20px; margin-bottom: 24px;">
+          <li><strong style="color:#c8e6c9;">Start large</strong> &mdash; Use 5&thinsp;m cells and a 25&times;25 grid (125&thinsp;m &times; 125&thinsp;m) centered on the documented GPS</li>
+          <li><strong style="color:#c8e6c9;">Begin at the outer edge</strong> &mdash; Walk inward in a spiral. The outer cells establish your <strong>background magnetic field</strong></li>
+          <li><strong style="color:#c8e6c9;">Watch the signal</strong> &mdash; As you spiral inward, the nT values will start rising as you approach the buried casing</li>
+          <li><strong style="color:#c8e6c9;">Refine</strong> &mdash; Once you spot the anomaly, optionally start a new fine-grid survey (1&ndash;2&thinsp;m cells) centered on the peak</li>
+        </ol>
+
+        <div style="background: rgba(76,175,80,0.08); border: 1px solid rgba(76,175,80,0.2); border-radius: 12px; padding: 16px;">
+          <h5 style="color:#81C784; font-size: 0.85rem; margin-bottom: 8px;">Why outside-in beats center-out</h5>
+          <p style="color: #7a9a7a; font-size: 0.82rem; line-height: 1.6;">
+            Center-out assumes the GPS is correct &mdash; it often isn&rsquo;t. Outside-in establishes the baseline first, so anomalies are immediately visible as colored cells appear on the map. Even if the well is off-center, the large grid captures it.
+          </p>
+        </div>
+      </div>
+
+      <!-- Right: Interactive spiral demo -->
+      <div style="text-align: center;">
+        <p style="color: #6a8a6a; font-size: 0.75rem; margin-bottom: 16px; letter-spacing: 1px; text-transform: uppercase;">Interactive Demo &mdash; Outside-In Spiral Search</p>
+        <div style="display: inline-block; position: relative;">
+          <canvas id="spiralCanvas" width="320" height="320" style="border-radius: 12px; border: 1px solid rgba(76,175,80,0.15); background: rgba(10,20,15,0.3);"></canvas>
+          <div style="margin-top: 8px; font-size: 0.7rem; color: #6a8a6a;">
+            <span style="color:#4CAF50;">&#x25CF;</span> surveyor &nbsp;
+            <span style="color:#FFD54F;">&#x25CF;</span> actual well &nbsp;
+            <span style="color:#FF7043;">&#x25A0;</span> anomaly detected
+          </div>
+          <div style="margin-top: 4px; font-size: 0.68rem; color: #4a6a4a;">
+            <span id="spiralStatus">Background: flat &mdash; spiraling inward&hellip;</span>
+          </div>
+        </div>
+        <button onclick="restartSpiralDemo()" style="margin-top: 12px; background: rgba(76,175,80,0.15); border: 1px solid rgba(76,175,80,0.3); color: #81C784; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; transition: all 0.3s;" onmouseover="this.style.background='rgba(76,175,80,0.25)'" onmouseout="this.style.background='rgba(76,175,80,0.15)'">
+          Replay Spiral
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
 <!-- ==================== MODEL & INVERSION ==================== -->
 <section id="model">
   <div class="container">
@@ -1416,7 +1483,7 @@ const sectionObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
       const id = entry.target.id;
-      const sectionIds = ['hero','what','workflow','collecting','features','model','upload','awards','tips'];
+      const sectionIds = ['hero','what','workflow','collecting','features','strategy','model','upload','awards','tips'];
       const idx = sectionIds.indexOf(id);
       dots.forEach((d, i) => d.classList.toggle('active', i === idx));
       navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id));
@@ -1655,6 +1722,179 @@ document.addEventListener('keydown', (e) => {
 document.querySelectorAll('.phone-screen img').forEach(img => {
   img.addEventListener('click', () => openLightbox(img.src));
 });
+
+// === OUTSIDE-IN SPIRAL DEMO ===
+const spiralCanvas = document.getElementById('spiralCanvas');
+const sCtx = spiralCanvas.getContext('2d');
+const SG = 13; // grid cells
+const SW = 320; // canvas width
+const sCellW = SW / SG;
+let spiralAnimId = null;
+let spiralStarted = false;
+
+// Well is off-center (simulating GPS error) — actual well at row 7, col 8
+const wellR = 7, wellC = 8;
+
+// Magnetic anomaly strength based on distance from well
+function wellSignal(r, c) {
+  const dr = r - wellR, dc = c - wellC;
+  const dist = Math.sqrt(dr * dr + dc * dc);
+  return Math.max(0, 1 - dist / 5);
+}
+
+// Generate outside-in Archimedean spiral path
+function generateSpiralPath() {
+  const path = [];
+  const visited = new Set();
+  // Start at top-left corner, spiral inward
+  let r = 0, c = 0;
+  let rMin = 0, rMax = SG - 1, cMin = 0, cMax = SG - 1;
+
+  while (rMin <= rMax && cMin <= cMax) {
+    // Top edge: left to right
+    for (let col = cMin; col <= cMax; col++) {
+      if (!visited.has(rMin * SG + col)) {
+        path.push({ r: rMin, c: col });
+        visited.add(rMin * SG + col);
+      }
+    }
+    rMin++;
+    // Right edge: top to bottom
+    for (let row = rMin; row <= rMax; row++) {
+      if (!visited.has(row * SG + cMax)) {
+        path.push({ r: row, c: cMax });
+        visited.add(row * SG + cMax);
+      }
+    }
+    cMax--;
+    // Bottom edge: right to left
+    for (let col = cMax; col >= cMin; col--) {
+      if (!visited.has(rMax * SG + col)) {
+        path.push({ r: rMax, c: col });
+        visited.add(rMax * SG + col);
+      }
+    }
+    rMax--;
+    // Left edge: bottom to top
+    for (let row = rMax; row >= rMin; row--) {
+      if (!visited.has(row * SG + cMin)) {
+        path.push({ r: row, c: cMin });
+        visited.add(row * SG + cMin);
+      }
+    }
+    cMin++;
+  }
+  return path;
+}
+
+function drawSpiralFrame(visited, currentPos, step, totalSteps) {
+  sCtx.clearRect(0, 0, SW, SW);
+
+  // Background
+  sCtx.fillStyle = 'rgba(15, 30, 20, 0.4)';
+  sCtx.fillRect(0, 0, SW, SW);
+
+  // Grid lines
+  sCtx.strokeStyle = 'rgba(76, 175, 80, 0.12)';
+  sCtx.lineWidth = 0.5;
+  for (let i = 0; i <= SG; i++) {
+    sCtx.beginPath(); sCtx.moveTo(i * sCellW, 0); sCtx.lineTo(i * sCellW, SW); sCtx.stroke();
+    sCtx.beginPath(); sCtx.moveTo(0, i * sCellW); sCtx.lineTo(SW, i * sCellW); sCtx.stroke();
+  }
+
+  // Documented GPS marker (center cross — this is where the GPS says the well is)
+  const gpsR = Math.floor(SG / 2), gpsC = Math.floor(SG / 2);
+  const gpsCx = (gpsC + 0.5) * sCellW, gpsCy = (gpsR + 0.5) * sCellW;
+  sCtx.strokeStyle = 'rgba(255,255,255,0.25)';
+  sCtx.lineWidth = 1;
+  sCtx.beginPath(); sCtx.moveTo(gpsCx - 8, gpsCy); sCtx.lineTo(gpsCx + 8, gpsCy); sCtx.stroke();
+  sCtx.beginPath(); sCtx.moveTo(gpsCx, gpsCy - 8); sCtx.lineTo(gpsCx, gpsCy + 8); sCtx.stroke();
+  sCtx.strokeStyle = 'rgba(255,255,255,0.15)';
+  sCtx.beginPath(); sCtx.arc(gpsCx, gpsCy, 12, 0, Math.PI * 2); sCtx.stroke();
+
+  // Draw filled cells
+  let anomalyDetected = false;
+  for (const v of visited) {
+    const signal = wellSignal(v.r, v.c);
+    if (signal > 0.15) anomalyDetected = true;
+    // Color: background is blue, anomaly ramps through green/yellow/red
+    const hue = (1 - signal) * 240;
+    const sat = 70 + signal * 25;
+    const light = signal > 0.1 ? 40 + signal * 35 : 30;
+    const alpha = signal > 0.1 ? 0.85 : 0.4;
+    sCtx.fillStyle = `hsla(${hue}, ${sat}%, ${light}%, ${alpha})`;
+    sCtx.fillRect(v.c * sCellW + 1, v.r * sCellW + 1, sCellW - 2, sCellW - 2);
+  }
+
+  // Actual well location (hidden until anomaly found)
+  if (anomalyDetected) {
+    const wx = (wellC + 0.5) * sCellW, wy = (wellR + 0.5) * sCellW;
+    sCtx.fillStyle = 'rgba(255, 213, 79, 0.3)';
+    sCtx.beginPath(); sCtx.arc(wx, wy, 18, 0, Math.PI * 2); sCtx.fill();
+    sCtx.fillStyle = '#FFD54F';
+    sCtx.beginPath(); sCtx.arc(wx, wy, 5, 0, Math.PI * 2); sCtx.fill();
+  }
+
+  // Surveyor dot
+  if (currentPos) {
+    const cx = (currentPos.c + 0.5) * sCellW, cy = (currentPos.r + 0.5) * sCellW;
+    sCtx.fillStyle = 'rgba(76, 175, 80, 0.35)';
+    sCtx.beginPath(); sCtx.arc(cx, cy, 10, 0, Math.PI * 2); sCtx.fill();
+    sCtx.fillStyle = '#66BB6A';
+    sCtx.beginPath(); sCtx.arc(cx, cy, 5, 0, Math.PI * 2); sCtx.fill();
+    sCtx.fillStyle = '#fff';
+    sCtx.beginPath(); sCtx.arc(cx, cy, 2, 0, Math.PI * 2); sCtx.fill();
+  }
+
+  // GPS label
+  sCtx.fillStyle = 'rgba(255,255,255,0.3)';
+  sCtx.font = '9px system-ui';
+  sCtx.fillText('GPS', gpsCx + 14, gpsCy + 4);
+
+  // Status text
+  const statusEl = document.getElementById('spiralStatus');
+  if (statusEl) {
+    const pct = Math.round(step / totalSteps * 100);
+    if (!anomalyDetected) {
+      statusEl.textContent = `Coverage: ${pct}% — Background: flat — spiraling inward\u2026`;
+    } else {
+      statusEl.textContent = `Coverage: ${pct}% — Anomaly detected! Well is SE of documented GPS`;
+    }
+  }
+}
+
+function runSpiralDemo() {
+  const path = generateSpiralPath();
+  const visited = [];
+  let step = 0;
+
+  function tick() {
+    if (step >= path.length) {
+      drawSpiralFrame(visited, null, step, path.length);
+      return;
+    }
+    const p = path[step];
+    visited.push(p);
+    drawSpiralFrame(visited, p, step, path.length);
+    step++;
+    spiralAnimId = setTimeout(tick, 35);
+  }
+  tick();
+}
+
+function restartSpiralDemo() {
+  if (spiralAnimId) clearTimeout(spiralAnimId);
+  runSpiralDemo();
+}
+
+// Start spiral demo when scrolled into view
+const spiralObserver = new IntersectionObserver((entries) => {
+  if (entries[0].isIntersecting && !spiralStarted) {
+    spiralStarted = true;
+    setTimeout(runSpiralDemo, 400);
+  }
+}, { threshold: 0.4 });
+spiralObserver.observe(document.getElementById('spiralCanvas'));
 </script>
 
 </body>
