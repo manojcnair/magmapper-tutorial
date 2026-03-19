@@ -718,12 +718,8 @@
   }
 
   /* ===== RESPONSIVE ===== */
-  #strategy .container > div[style*="grid-template-columns"] {
-    /* allow responsive override */
-  }
   @media (max-width: 900px) {
     .what-grid, .model-layout { grid-template-columns: 1fr; }
-    #strategy .container > div[style] { display: block !important; }
     .mag-showcase { flex-direction: column; }
     .walk-demo-container { flex-direction: column; }
     .timeline::before { left: 24px; }
@@ -790,7 +786,6 @@
       <button class="nav-dot" onclick="scrollTo('#workflow')" aria-label="Get Started"><span class="tooltip">Get Started</span></button>
       <button class="nav-dot" onclick="scrollTo('#collecting')" aria-label="Collect Data"><span class="tooltip">Collect</span></button>
       <button class="nav-dot" onclick="scrollTo('#features')" aria-label="Features"><span class="tooltip">Features</span></button>
-      <button class="nav-dot" onclick="scrollTo('#strategy')" aria-label="Strategy"><span class="tooltip">Strategy</span></button>
       <button class="nav-dot" onclick="scrollTo('#model')" aria-label="Model"><span class="tooltip">Model</span></button>
       <button class="nav-dot" onclick="scrollTo('#upload')" aria-label="Upload"><span class="tooltip">Upload</span></button>
       <button class="nav-dot" onclick="scrollTo('#awards')" aria-label="Awards"><span class="tooltip">Awards</span></button>
@@ -802,7 +797,6 @@
       <a href="#workflow">Start</a>
       <a href="#collecting">Collect</a>
       <a href="#features">Features</a>
-      <a href="#strategy">Strategy</a>
       <a href="#model">Model</a>
       <a href="#upload">Upload</a>
       <a href="#awards">Awards</a>
@@ -812,7 +806,6 @@
       <a href="#what">About</a>
       <a href="#workflow">Start</a>
       <a href="#collecting">Collect</a>
-      <a href="#strategy">Strategy</a>
       <a href="#upload">Upload</a>
     </div>
   </div>
@@ -1034,38 +1027,90 @@
       </div>
     </div>
 
-    <!-- INTERACTIVE WALK DEMO -->
-    <div class="reveal" style="margin-top: 60px; text-align: center;">
-      <p style="color: #6a8a6a; font-size: 0.8rem; margin-bottom: 20px; letter-spacing: 1px; text-transform: uppercase;">Interactive Demo &mdash; Watch a Surveyor Walk &amp; Fill the Grid</p>
+    <!-- TWO SURVEY STRATEGIES -->
+    <div class="reveal" style="margin-top: 60px;">
+      <p style="color: #6a8a6a; font-size: 0.8rem; margin-bottom: 20px; letter-spacing: 1px; text-transform: uppercase; text-align: center;">Two Survey Strategies &mdash; Choose Based on Location Confidence</p>
 
-      <div class="walk-demo-container">
-        <!-- Left: Data Grid -->
-        <div class="walk-demo-panel">
-          <h5>Magnetic Data Grid</h5>
-          <div class="grid-demo" id="gridDemo"></div>
-          <div class="grid-legend">
-            <span>Low</span>
-            <div class="grid-legend-bar"></div>
-            <span>High</span>
+      <!-- Strategy toggle buttons -->
+      <div style="display: flex; justify-content: center; gap: 12px; margin-bottom: 28px;">
+        <button id="btnGridStrategy" onclick="showStrategy('grid')" style="background: rgba(76,175,80,0.25); border: 1px solid rgba(76,175,80,0.5); color: #81C784; padding: 10px 24px; border-radius: 24px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all 0.3s;">
+          &#x1F4CD; Known Location
+        </button>
+        <button id="btnSpiralStrategy" onclick="showStrategy('spiral')" style="background: rgba(76,175,80,0.08); border: 1px solid rgba(76,175,80,0.2); color: #6a8a6a; padding: 10px 24px; border-radius: 24px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all 0.3s;">
+          &#x1F50D; Uncertain Location
+        </button>
+      </div>
+
+      <!-- STRATEGY 1: Known Location - Grid Walk -->
+      <div id="strategyGrid">
+        <div style="display: flex; gap: 32px; align-items: start; margin-bottom: 20px; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 280px;">
+            <h4 style="color:#c8e6c9; font-size: 1rem; margin-bottom: 8px;">Strategy A: Targeted Grid Survey</h4>
+            <p style="color: #8aaa8a; font-size: 0.88rem; line-height: 1.7;">
+              When the well location is known (visible casing, reliable GPS), use a <strong>small grid</strong> (1&ndash;2&thinsp;m cells) centered directly on the well. Walk any pattern &mdash; grid, zigzag, or spiral &mdash; to fill the cells.
+            </p>
           </div>
-          <div class="walk-legend">Cells fill as the surveyor walks &mdash; first pass (faint), second pass (solid)</div>
         </div>
-
-        <!-- Right: Walking Person Canvas -->
-        <div class="walk-demo-panel">
-          <h5>Surveyor Path (top-down view)</h5>
-          <canvas class="walk-canvas" id="walkCanvas" width="280" height="280"></canvas>
-          <div class="walk-legend">
-            <span style="color:#4CAF50;">&#x25CF;</span> surveyor &nbsp;
-            <span style="color:#FFD54F;">&#x25CF;</span> well location &nbsp;
-            <span style="color:rgba(76,175,80,0.3);">&#x2500;</span> path
+        <div style="text-align: center;">
+          <div class="walk-demo-container">
+            <div class="walk-demo-panel">
+              <h5>Magnetic Data Grid</h5>
+              <div class="grid-demo" id="gridDemo"></div>
+              <div class="grid-legend">
+                <span>Low</span>
+                <div class="grid-legend-bar"></div>
+                <span>High</span>
+              </div>
+              <div class="walk-legend">Cells fill as the surveyor walks &mdash; first pass (faint), second pass (solid)</div>
+            </div>
+            <div class="walk-demo-panel">
+              <h5>Surveyor Path (top-down view)</h5>
+              <canvas class="walk-canvas" id="walkCanvas" width="280" height="280"></canvas>
+              <div class="walk-legend">
+                <span style="color:#4CAF50;">&#x25CF;</span> surveyor &nbsp;
+                <span style="color:#FFD54F;">&#x25CF;</span> well location &nbsp;
+                <span style="color:rgba(76,175,80,0.3);">&#x2500;</span> path
+              </div>
+            </div>
           </div>
+          <button onclick="restartWalkDemo()" style="margin-top: 16px; background: rgba(76,175,80,0.15); border: 1px solid rgba(76,175,80,0.3); color: #81C784; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; transition: all 0.3s;" onmouseover="this.style.background='rgba(76,175,80,0.25)'" onmouseout="this.style.background='rgba(76,175,80,0.15)'">
+            Replay Animation
+          </button>
         </div>
       </div>
 
-      <button onclick="restartWalkDemo()" style="margin-top: 16px; background: rgba(76,175,80,0.15); border: 1px solid rgba(76,175,80,0.3); color: #81C784; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; transition: all 0.3s;" onmouseover="this.style.background='rgba(76,175,80,0.25)'" onmouseout="this.style.background='rgba(76,175,80,0.15)'">
-        Replay Animation
-      </button>
+      <!-- STRATEGY 2: Uncertain Location - Outside-In Spiral -->
+      <div id="strategySpiralSection" style="display: none;">
+        <div style="display: flex; gap: 32px; align-items: start; margin-bottom: 20px; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 280px;">
+            <h4 style="color:#c8e6c9; font-size: 1rem; margin-bottom: 8px;">Strategy B: Reconnaissance Spiral</h4>
+            <p style="color: #8aaa8a; font-size: 0.88rem; line-height: 1.7; margin-bottom: 12px;">
+              When the documented GPS is uncertain (5&ndash;30&thinsp;m error, no visible casing), use a <strong>large grid</strong> (5&thinsp;m cells, 25&times;25) and spiral <strong>inward from the outer edge</strong>. Inspired by animal foraging strategies (Archimedean spiral), this establishes the background field first, then reveals the anomaly as you approach the actual well.
+            </p>
+            <ol style="color: #8aaa8a; font-size: 0.85rem; line-height: 1.8; padding-left: 20px;">
+              <li><strong style="color:#c8e6c9;">Start at the edge</strong> &mdash; outer cells establish background</li>
+              <li><strong style="color:#c8e6c9;">Spiral inward</strong> &mdash; watch for rising nT values</li>
+              <li><strong style="color:#c8e6c9;">Spot the anomaly</strong> &mdash; warm colors appear as you near the well</li>
+              <li><strong style="color:#c8e6c9;">Refine</strong> &mdash; start a new fine-grid survey centered on the peak</li>
+            </ol>
+          </div>
+        </div>
+        <div style="text-align: center;">
+          <canvas id="spiralCanvas" width="320" height="320" style="border-radius: 12px; border: 1px solid rgba(76,175,80,0.15); background: rgba(10,20,15,0.3);"></canvas>
+          <div style="margin-top: 8px; font-size: 0.7rem; color: #6a8a6a;">
+            <span style="color:#4CAF50;">&#x25CF;</span> surveyor &nbsp;
+            <span style="color:#FFD54F;">&#x25CF;</span> actual well &nbsp;
+            <span style="color:#FF7043;">&#x25A0;</span> anomaly detected &nbsp;
+            <span style="color:rgba(255,255,255,0.3);">+</span> documented GPS
+          </div>
+          <div style="margin-top: 4px; font-size: 0.68rem; color: #4a6a4a;">
+            <span id="spiralStatus">Background: flat &mdash; spiraling inward&hellip;</span>
+          </div>
+          <button onclick="restartSpiralDemo()" style="margin-top: 12px; background: rgba(76,175,80,0.15); border: 1px solid rgba(76,175,80,0.3); color: #81C784; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; transition: all 0.3s;" onmouseover="this.style.background='rgba(76,175,80,0.25)'" onmouseout="this.style.background='rgba(76,175,80,0.15)'">
+            Replay Spiral
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -1156,66 +1201,6 @@
           </div>
         </div>
         <div class="phone-label">Settings &amp; Export</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="divider"></div>
-
-<!-- ==================== SURVEY STRATEGY ==================== -->
-<section id="strategy">
-  <div class="container">
-    <div class="reveal" style="text-align:center; margin-bottom: 48px;">
-      <span class="section-label">Field Strategy</span>
-      <h2 class="section-title">Finding the Well:<br>Outside-In Spiral</h2>
-      <p class="section-subtitle" style="margin: 16px auto 0;">Documented GPS locations can be off by meters or even tens of meters. Use a reconnaissance spiral to find the actual anomaly.</p>
-    </div>
-
-    <div class="reveal" style="display:grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start;">
-      <!-- Left: Strategy explanation -->
-      <div>
-        <h4 style="color:#c8e6c9; font-size: 1rem; margin-bottom: 12px;">The Problem</h4>
-        <p style="color: #8aaa8a; font-size: 0.9rem; margin-bottom: 24px; line-height: 1.7;">
-          Of the estimated 3.5 million abandoned wells, most have only approximate GPS coordinates. The actual well casing may be <strong>5&ndash;30 meters</strong> from the documented location &mdash; buried under vegetation with no surface expression.
-        </p>
-
-        <h4 style="color:#c8e6c9; font-size: 1rem; margin-bottom: 12px;">The Solution: Outside-In Spiral</h4>
-        <p style="color: #8aaa8a; font-size: 0.9rem; margin-bottom: 16px; line-height: 1.7;">
-          Inspired by <strong>animal foraging strategies</strong> (desert ants, dung beetles), where creatures systematically search an area using an Archimedean spiral &mdash; guaranteeing full coverage with no gaps:
-        </p>
-        <ol style="color: #8aaa8a; font-size: 0.88rem; line-height: 1.8; padding-left: 20px; margin-bottom: 24px;">
-          <li><strong style="color:#c8e6c9;">Start large</strong> &mdash; Use 5&thinsp;m cells and a 25&times;25 grid (125&thinsp;m &times; 125&thinsp;m) centered on the documented GPS</li>
-          <li><strong style="color:#c8e6c9;">Begin at the outer edge</strong> &mdash; Walk inward in a spiral. The outer cells establish your <strong>background magnetic field</strong></li>
-          <li><strong style="color:#c8e6c9;">Watch the signal</strong> &mdash; As you spiral inward, the nT values will start rising as you approach the buried casing</li>
-          <li><strong style="color:#c8e6c9;">Refine</strong> &mdash; Once you spot the anomaly, optionally start a new fine-grid survey (1&ndash;2&thinsp;m cells) centered on the peak</li>
-        </ol>
-
-        <div style="background: rgba(76,175,80,0.08); border: 1px solid rgba(76,175,80,0.2); border-radius: 12px; padding: 16px;">
-          <h5 style="color:#81C784; font-size: 0.85rem; margin-bottom: 8px;">Why outside-in beats center-out</h5>
-          <p style="color: #7a9a7a; font-size: 0.82rem; line-height: 1.6;">
-            Center-out assumes the GPS is correct &mdash; it often isn&rsquo;t. Outside-in establishes the baseline first, so anomalies are immediately visible as colored cells appear on the map. Even if the well is off-center, the large grid captures it.
-          </p>
-        </div>
-      </div>
-
-      <!-- Right: Interactive spiral demo -->
-      <div style="text-align: center;">
-        <p style="color: #6a8a6a; font-size: 0.75rem; margin-bottom: 16px; letter-spacing: 1px; text-transform: uppercase;">Interactive Demo &mdash; Outside-In Spiral Search</p>
-        <div style="display: inline-block; position: relative;">
-          <canvas id="spiralCanvas" width="320" height="320" style="border-radius: 12px; border: 1px solid rgba(76,175,80,0.15); background: rgba(10,20,15,0.3);"></canvas>
-          <div style="margin-top: 8px; font-size: 0.7rem; color: #6a8a6a;">
-            <span style="color:#4CAF50;">&#x25CF;</span> surveyor &nbsp;
-            <span style="color:#FFD54F;">&#x25CF;</span> actual well &nbsp;
-            <span style="color:#FF7043;">&#x25A0;</span> anomaly detected
-          </div>
-          <div style="margin-top: 4px; font-size: 0.68rem; color: #4a6a4a;">
-            <span id="spiralStatus">Background: flat &mdash; spiraling inward&hellip;</span>
-          </div>
-        </div>
-        <button onclick="restartSpiralDemo()" style="margin-top: 12px; background: rgba(76,175,80,0.15); border: 1px solid rgba(76,175,80,0.3); color: #81C784; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; transition: all 0.3s;" onmouseover="this.style.background='rgba(76,175,80,0.25)'" onmouseout="this.style.background='rgba(76,175,80,0.15)'">
-          Replay Spiral
-        </button>
       </div>
     </div>
   </div>
@@ -1483,7 +1468,7 @@ const sectionObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
       const id = entry.target.id;
-      const sectionIds = ['hero','what','workflow','collecting','features','strategy','model','upload','awards','tips'];
+      const sectionIds = ['hero','what','workflow','collecting','features','model','upload','awards','tips'];
       const idx = sectionIds.indexOf(id);
       dots.forEach((d, i) => d.classList.toggle('active', i === idx));
       navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id));
@@ -1723,6 +1708,35 @@ document.querySelectorAll('.phone-screen img').forEach(img => {
   img.addEventListener('click', () => openLightbox(img.src));
 });
 
+// === STRATEGY TOGGLE ===
+function showStrategy(which) {
+  const gridSection = document.getElementById('strategyGrid');
+  const spiralSection = document.getElementById('strategySpiralSection');
+  const btnGrid = document.getElementById('btnGridStrategy');
+  const btnSpiral = document.getElementById('btnSpiralStrategy');
+  if (which === 'grid') {
+    gridSection.style.display = '';
+    spiralSection.style.display = 'none';
+    btnGrid.style.background = 'rgba(76,175,80,0.25)';
+    btnGrid.style.borderColor = 'rgba(76,175,80,0.5)';
+    btnGrid.style.color = '#81C784';
+    btnSpiral.style.background = 'rgba(76,175,80,0.08)';
+    btnSpiral.style.borderColor = 'rgba(76,175,80,0.2)';
+    btnSpiral.style.color = '#6a8a6a';
+  } else {
+    gridSection.style.display = 'none';
+    spiralSection.style.display = '';
+    btnSpiral.style.background = 'rgba(76,175,80,0.25)';
+    btnSpiral.style.borderColor = 'rgba(76,175,80,0.5)';
+    btnSpiral.style.color = '#81C784';
+    btnGrid.style.background = 'rgba(76,175,80,0.08)';
+    btnGrid.style.borderColor = 'rgba(76,175,80,0.2)';
+    btnGrid.style.color = '#6a8a6a';
+    // Auto-start spiral demo if not started
+    if (!spiralStarted) { spiralStarted = true; setTimeout(runSpiralDemo, 300); }
+  }
+}
+
 // === OUTSIDE-IN SPIRAL DEMO ===
 const spiralCanvas = document.getElementById('spiralCanvas');
 const sCtx = spiralCanvas.getContext('2d');
@@ -1887,14 +1901,7 @@ function restartSpiralDemo() {
   runSpiralDemo();
 }
 
-// Start spiral demo when scrolled into view
-const spiralObserver = new IntersectionObserver((entries) => {
-  if (entries[0].isIntersecting && !spiralStarted) {
-    spiralStarted = true;
-    setTimeout(runSpiralDemo, 400);
-  }
-}, { threshold: 0.4 });
-spiralObserver.observe(document.getElementById('spiralCanvas'));
+// Spiral demo auto-starts when user clicks "Uncertain Location" button
 </script>
 
 </body>
