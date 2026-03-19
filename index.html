@@ -1083,15 +1083,15 @@
       <div id="strategySpiralSection" style="display: none;">
         <div style="display: flex; gap: 32px; align-items: start; margin-bottom: 20px; flex-wrap: wrap;">
           <div style="flex: 1; min-width: 280px;">
-            <h4 style="color:#c8e6c9; font-size: 1rem; margin-bottom: 8px;">Strategy B: Reconnaissance Spiral</h4>
+            <h4 style="color:#c8e6c9; font-size: 1rem; margin-bottom: 8px;">Strategy B: Sparse Reconnaissance Spiral</h4>
             <p style="color: #8aaa8a; font-size: 0.88rem; line-height: 1.7; margin-bottom: 12px;">
-              When the documented GPS is uncertain (5&ndash;30&thinsp;m error, no visible casing), use a <strong>large grid</strong> (5&thinsp;m cells, 25&times;25) and spiral <strong>inward from the outer edge</strong>. Inspired by animal foraging strategies (Archimedean spiral), this establishes the background field first, then reveals the anomaly as you approach the actual well.
+              When the documented GPS is uncertain (5&ndash;30&thinsp;m error, no visible casing), use a <strong>large grid</strong> (5&thinsp;m cells, 25&times;25 = 125&thinsp;m) and do a <strong>sparse inward spiral</strong> &mdash; walking every 3rd ring rather than every cell. This is inspired by animal foraging strategies where creatures maximize area coverage with minimal effort.
             </p>
             <ol style="color: #8aaa8a; font-size: 0.85rem; line-height: 1.8; padding-left: 20px;">
-              <li><strong style="color:#c8e6c9;">Start at the edge</strong> &mdash; outer cells establish background</li>
-              <li><strong style="color:#c8e6c9;">Spiral inward</strong> &mdash; watch for rising nT values</li>
-              <li><strong style="color:#c8e6c9;">Spot the anomaly</strong> &mdash; warm colors appear as you near the well</li>
-              <li><strong style="color:#c8e6c9;">Refine</strong> &mdash; once you identify the peak, long-press the map at that location and start a <strong>new survey</strong> with finer resolution (1&ndash;2&thinsp;m cells) to precisely localize the well</li>
+              <li><strong style="color:#c8e6c9;">Sparse scan</strong> &mdash; walk every 3rd rectangular ring inward (~35% of cells). Outer rings establish background</li>
+              <li><strong style="color:#c8e6c9;">Detect the signal</strong> &mdash; watch the live nT reading; when values start rising, you&rsquo;re near the well</li>
+              <li><strong style="color:#c8e6c9;">Adaptive infill</strong> &mdash; densify coverage around the anomaly zone to map its full extent</li>
+              <li><strong style="color:#c8e6c9;">Refine</strong> &mdash; long-press the map at the peak and start a <strong>new survey</strong> with finer resolution (1&ndash;2&thinsp;m cells) to precisely localize the well</li>
             </ol>
           </div>
         </div>
@@ -1737,161 +1737,206 @@ function showStrategy(which) {
   }
 }
 
-// === OUTSIDE-IN SPIRAL DEMO ===
+// === OUTSIDE-IN SPARSE SPIRAL DEMO ===
 const spiralCanvas = document.getElementById('spiralCanvas');
 const sCtx = spiralCanvas.getContext('2d');
-const SG = 13; // grid cells
+const SG = 25; // 25x25 grid (5m cells = 125m x 125m)
 const SW = 320; // canvas width
 const sCellW = SW / SG;
 let spiralAnimId = null;
 let spiralStarted = false;
 
-// Well is off-center (simulating GPS error) — actual well at row 7, col 8
-const wellR = 7, wellC = 8;
+// Well is off-center (simulating GPS error ~15m SE)
+// GPS center = (12,12), actual well at (15,15) — 3 cells = 15m off
+const wellR = 15, wellC = 15;
+const RING_SKIP = 3; // walk every 3rd ring (sparse recon)
+const ANOMALY_THRESHOLD = 0.12; // signal level that triggers infill
 
-// Magnetic anomaly strength based on distance from well
+// Magnetic anomaly: dipole falloff, radius ~4 cells = 20m
 function wellSignal(r, c) {
   const dr = r - wellR, dc = c - wellC;
   const dist = Math.sqrt(dr * dr + dc * dc);
-  return Math.max(0, 1 - dist / 5);
+  return Math.max(0, 1 - dist / 6);
 }
 
-// Generate outside-in Archimedean spiral path
-function generateSpiralPath() {
+// Walk one rectangular ring (perimeter at depth d from edge)
+function walkRing(d, SG) {
   const path = [];
-  const visited = new Set();
-  // Start at top-left corner, spiral inward
-  let r = 0, c = 0;
-  let rMin = 0, rMax = SG - 1, cMin = 0, cMax = SG - 1;
-
-  while (rMin <= rMax && cMin <= cMax) {
-    // Top edge: left to right
-    for (let col = cMin; col <= cMax; col++) {
-      if (!visited.has(rMin * SG + col)) {
-        path.push({ r: rMin, c: col });
-        visited.add(rMin * SG + col);
-      }
-    }
-    rMin++;
-    // Right edge: top to bottom
-    for (let row = rMin; row <= rMax; row++) {
-      if (!visited.has(row * SG + cMax)) {
-        path.push({ r: row, c: cMax });
-        visited.add(row * SG + cMax);
-      }
-    }
-    cMax--;
-    // Bottom edge: right to left
-    for (let col = cMax; col >= cMin; col--) {
-      if (!visited.has(rMax * SG + col)) {
-        path.push({ r: rMax, c: col });
-        visited.add(rMax * SG + col);
-      }
-    }
-    rMax--;
-    // Left edge: bottom to top
-    for (let row = rMax; row >= rMin; row--) {
-      if (!visited.has(row * SG + cMin)) {
-        path.push({ r: row, c: cMin });
-        visited.add(row * SG + cMin);
-      }
-    }
-    cMin++;
-  }
+  const rMin = d, rMax = SG - 1 - d, cMin = d, cMax = SG - 1 - d;
+  if (rMin > rMax || cMin > cMax) return path;
+  for (let c = cMin; c <= cMax; c++) path.push({ r: rMin, c });
+  for (let r = rMin + 1; r <= rMax; r++) path.push({ r, c: cMax });
+  if (rMax > rMin) for (let c = cMax - 1; c >= cMin; c--) path.push({ r: rMax, c });
+  if (cMax > cMin) for (let r = rMax - 1; r > rMin; r--) path.push({ r, c: cMin });
   return path;
 }
 
-function drawSpiralFrame(visited, currentPos, step, totalSteps) {
-  sCtx.clearRect(0, 0, SW, SW);
+// Generate two-phase path: sparse rings, then adaptive infill
+function generateSpiralPath() {
+  const phases = []; // array of { cells: [...], phase: 'scan'|'infill' }
+  const visited = new Set();
 
-  // Background
+  // Phase 1: Sparse rectangular spiral — every RING_SKIP-th ring
+  const scanCells = [];
+  let anomalyRing = -1;
+  for (let d = 0; d < Math.floor(SG / 2); d += RING_SKIP) {
+    const ring = walkRing(d, SG);
+    for (const p of ring) {
+      if (!visited.has(p.r * SG + p.c)) {
+        scanCells.push(p);
+        visited.add(p.r * SG + p.c);
+        // Check if this ring hits the anomaly
+        if (anomalyRing < 0 && wellSignal(p.r, p.c) > ANOMALY_THRESHOLD) {
+          anomalyRing = d;
+        }
+      }
+    }
+  }
+  phases.push({ cells: scanCells, phase: 'scan' });
+
+  // Phase 2: Adaptive infill — dense coverage around the anomaly zone
+  // Fill all cells within ~5 cells of the well (the hot zone)
+  if (anomalyRing >= 0) {
+    const infillCells = [];
+    const hotCenter = { r: wellR, c: wellC };
+    const hotRadius = 6;
+    // Spiral inward through the hot zone
+    for (let dd = Math.max(0, anomalyRing - 2); dd <= Math.min(Math.floor(SG / 2), anomalyRing + hotRadius); dd++) {
+      const ring = walkRing(dd, SG);
+      for (const p of ring) {
+        const dr = p.r - hotCenter.r, dc = p.c - hotCenter.c;
+        const dist = Math.sqrt(dr * dr + dc * dc);
+        if (dist <= hotRadius && !visited.has(p.r * SG + p.c)) {
+          infillCells.push(p);
+          visited.add(p.r * SG + p.c);
+        }
+      }
+    }
+    // Also fill row-by-row within hot zone for completeness
+    for (let r = wellR - hotRadius; r <= wellR + hotRadius; r++) {
+      for (let c = wellC - hotRadius; c <= wellC + hotRadius; c++) {
+        if (r >= 0 && r < SG && c >= 0 && c < SG) {
+          const dr = r - hotCenter.r, dc = c - hotCenter.c;
+          if (Math.sqrt(dr * dr + dc * dc) <= hotRadius && !visited.has(r * SG + c)) {
+            infillCells.push({ r, c });
+            visited.add(r * SG + c);
+          }
+        }
+      }
+    }
+    phases.push({ cells: infillCells, phase: 'infill' });
+  }
+
+  return phases;
+}
+
+function drawSpiralFrame(visited, currentPos, phase, scanCount, totalScan) {
+  sCtx.clearRect(0, 0, SW, SW);
   sCtx.fillStyle = 'rgba(15, 30, 20, 0.4)';
   sCtx.fillRect(0, 0, SW, SW);
 
-  // Grid lines
-  sCtx.strokeStyle = 'rgba(76, 175, 80, 0.12)';
-  sCtx.lineWidth = 0.5;
+  // Grid lines (subtle for 25x25)
+  sCtx.strokeStyle = 'rgba(76, 175, 80, 0.07)';
+  sCtx.lineWidth = 0.3;
   for (let i = 0; i <= SG; i++) {
     sCtx.beginPath(); sCtx.moveTo(i * sCellW, 0); sCtx.lineTo(i * sCellW, SW); sCtx.stroke();
     sCtx.beginPath(); sCtx.moveTo(0, i * sCellW); sCtx.lineTo(SW, i * sCellW); sCtx.stroke();
   }
 
-  // Documented GPS marker (center cross — this is where the GPS says the well is)
+  // GPS marker (center)
   const gpsR = Math.floor(SG / 2), gpsC = Math.floor(SG / 2);
   const gpsCx = (gpsC + 0.5) * sCellW, gpsCy = (gpsR + 0.5) * sCellW;
-  sCtx.strokeStyle = 'rgba(255,255,255,0.25)';
-  sCtx.lineWidth = 1;
-  sCtx.beginPath(); sCtx.moveTo(gpsCx - 8, gpsCy); sCtx.lineTo(gpsCx + 8, gpsCy); sCtx.stroke();
-  sCtx.beginPath(); sCtx.moveTo(gpsCx, gpsCy - 8); sCtx.lineTo(gpsCx, gpsCy + 8); sCtx.stroke();
-  sCtx.strokeStyle = 'rgba(255,255,255,0.15)';
-  sCtx.beginPath(); sCtx.arc(gpsCx, gpsCy, 12, 0, Math.PI * 2); sCtx.stroke();
+  sCtx.strokeStyle = 'rgba(255,255,255,0.2)';
+  sCtx.lineWidth = 0.8;
+  sCtx.beginPath(); sCtx.moveTo(gpsCx - 6, gpsCy); sCtx.lineTo(gpsCx + 6, gpsCy); sCtx.stroke();
+  sCtx.beginPath(); sCtx.moveTo(gpsCx, gpsCy - 6); sCtx.lineTo(gpsCx, gpsCy + 6); sCtx.stroke();
+  sCtx.strokeStyle = 'rgba(255,255,255,0.1)';
+  sCtx.beginPath(); sCtx.arc(gpsCx, gpsCy, 8, 0, Math.PI * 2); sCtx.stroke();
 
-  // Draw filled cells
+  // Draw visited cells
   let anomalyDetected = false;
   for (const v of visited) {
     const signal = wellSignal(v.r, v.c);
-    if (signal > 0.15) anomalyDetected = true;
-    // Color: background is blue, anomaly ramps through green/yellow/red
+    if (signal > ANOMALY_THRESHOLD) anomalyDetected = true;
     const hue = (1 - signal) * 240;
     const sat = 70 + signal * 25;
-    const light = signal > 0.1 ? 40 + signal * 35 : 30;
-    const alpha = signal > 0.1 ? 0.85 : 0.4;
+    const light = signal > 0.08 ? 40 + signal * 35 : 28;
+    const alpha = signal > 0.08 ? 0.85 : 0.35;
     sCtx.fillStyle = `hsla(${hue}, ${sat}%, ${light}%, ${alpha})`;
-    sCtx.fillRect(v.c * sCellW + 1, v.r * sCellW + 1, sCellW - 2, sCellW - 2);
+    sCtx.fillRect(v.c * sCellW + 0.5, v.r * sCellW + 0.5, sCellW - 1, sCellW - 1);
   }
 
-  // Actual well location (hidden until anomaly found)
+  // Well marker (appears when anomaly detected)
   if (anomalyDetected) {
     const wx = (wellC + 0.5) * sCellW, wy = (wellR + 0.5) * sCellW;
-    sCtx.fillStyle = 'rgba(255, 213, 79, 0.3)';
-    sCtx.beginPath(); sCtx.arc(wx, wy, 18, 0, Math.PI * 2); sCtx.fill();
+    sCtx.fillStyle = 'rgba(255, 213, 79, 0.25)';
+    sCtx.beginPath(); sCtx.arc(wx, wy, 14, 0, Math.PI * 2); sCtx.fill();
     sCtx.fillStyle = '#FFD54F';
-    sCtx.beginPath(); sCtx.arc(wx, wy, 5, 0, Math.PI * 2); sCtx.fill();
+    sCtx.beginPath(); sCtx.arc(wx, wy, 3.5, 0, Math.PI * 2); sCtx.fill();
   }
 
   // Surveyor dot
   if (currentPos) {
     const cx = (currentPos.c + 0.5) * sCellW, cy = (currentPos.r + 0.5) * sCellW;
-    sCtx.fillStyle = 'rgba(76, 175, 80, 0.35)';
-    sCtx.beginPath(); sCtx.arc(cx, cy, 10, 0, Math.PI * 2); sCtx.fill();
+    sCtx.fillStyle = 'rgba(76, 175, 80, 0.3)';
+    sCtx.beginPath(); sCtx.arc(cx, cy, 7, 0, Math.PI * 2); sCtx.fill();
     sCtx.fillStyle = '#66BB6A';
-    sCtx.beginPath(); sCtx.arc(cx, cy, 5, 0, Math.PI * 2); sCtx.fill();
+    sCtx.beginPath(); sCtx.arc(cx, cy, 3.5, 0, Math.PI * 2); sCtx.fill();
     sCtx.fillStyle = '#fff';
-    sCtx.beginPath(); sCtx.arc(cx, cy, 2, 0, Math.PI * 2); sCtx.fill();
+    sCtx.beginPath(); sCtx.arc(cx, cy, 1.5, 0, Math.PI * 2); sCtx.fill();
   }
 
-  // GPS label
-  sCtx.fillStyle = 'rgba(255,255,255,0.3)';
-  sCtx.font = '9px system-ui';
-  sCtx.fillText('GPS', gpsCx + 14, gpsCy + 4);
+  // Labels
+  sCtx.fillStyle = 'rgba(255,255,255,0.25)';
+  sCtx.font = '8px system-ui';
+  sCtx.fillText('GPS', gpsCx + 10, gpsCy + 3);
+  // Grid info
+  sCtx.fillStyle = 'rgba(255,255,255,0.15)';
+  sCtx.fillText('25\u00d725 \u00b7 5m cells \u00b7 125m', 4, SW - 4);
 
-  // Status text
+  // Status
   const statusEl = document.getElementById('spiralStatus');
   if (statusEl) {
-    const pct = Math.round(step / totalSteps * 100);
-    if (!anomalyDetected) {
-      statusEl.textContent = `Coverage: ${pct}% — Background: flat — spiraling inward\u2026`;
+    const cellsVisited = visited.length;
+    const totalCells = SG * SG;
+    const pct = Math.round(cellsVisited / totalCells * 100);
+    if (phase === 'scan' && !anomalyDetected) {
+      statusEl.textContent = `Scanning: ${cellsVisited} cells (${pct}%) \u2014 background flat \u2014 spiraling inward\u2026`;
+    } else if (phase === 'scan' && anomalyDetected) {
+      statusEl.textContent = `Scanning: ${cellsVisited} cells (${pct}%) \u2014 Signal rising! Anomaly SE of GPS`;
+    } else if (phase === 'infill') {
+      statusEl.textContent = `Infill: ${cellsVisited} cells (${pct}%) \u2014 Densifying around anomaly peak`;
     } else {
-      statusEl.textContent = `Coverage: ${pct}% — Anomaly detected! Well is SE of documented GPS`;
+      statusEl.textContent = `Done: ${cellsVisited} of ${totalCells} cells (${pct}%) \u2014 Well located! Start fine-grid survey here`;
     }
   }
 }
 
 function runSpiralDemo() {
-  const path = generateSpiralPath();
+  const phases = generateSpiralPath();
   const visited = [];
-  let step = 0;
+  let phaseIdx = 0, stepInPhase = 0;
 
   function tick() {
-    if (step >= path.length) {
-      drawSpiralFrame(visited, null, step, path.length);
+    if (phaseIdx >= phases.length) {
+      drawSpiralFrame(visited, null, 'done', 0, 0);
       return;
     }
-    const p = path[step];
+    const currentPhase = phases[phaseIdx];
+    if (stepInPhase >= currentPhase.cells.length) {
+      phaseIdx++;
+      stepInPhase = 0;
+      // Brief pause between phases
+      spiralAnimId = setTimeout(tick, 500);
+      return;
+    }
+    const p = currentPhase.cells[stepInPhase];
     visited.push(p);
-    drawSpiralFrame(visited, p, step, path.length);
-    step++;
-    spiralAnimId = setTimeout(tick, 35);
+    drawSpiralFrame(visited, p, currentPhase.phase, stepInPhase, currentPhase.cells.length);
+    stepInPhase++;
+    // Scan phase: faster (sparse). Infill: slightly slower
+    const speed = currentPhase.phase === 'scan' ? 18 : 12;
+    spiralAnimId = setTimeout(tick, speed);
   }
   tick();
 }
