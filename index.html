@@ -503,8 +503,8 @@
   .walk-canvas {
     width: 280px; height: 280px;
     border-radius: 8px;
-    background: rgba(10, 20, 15, 0.3);
-    border: 1px solid rgba(76, 175, 80, 0.1);
+    background: rgba(15, 25, 20, 0.6);
+    border: 1px solid rgba(76, 175, 80, 0.2);
   }
   .walk-legend {
     margin-top: 10px;
@@ -520,17 +520,17 @@
     width: 280px; height: 280px;
     border-radius: 8px;
     overflow: hidden;
-    background: rgba(10, 20, 15, 0.3);
-    border: 1px solid rgba(76, 175, 80, 0.1);
+    background: rgba(15, 25, 20, 0.6);
+    border: 1px solid rgba(76, 175, 80, 0.2);
   }
   .grid-cell {
     aspect-ratio: 1;
-    background: rgba(40, 65, 45, 0.35);
+    background: rgba(50, 75, 55, 0.5);
     transition: background 0.4s ease, opacity 0.4s ease;
     position: relative;
   }
   .grid-cell.half-filled {
-    opacity: 0.55;
+    opacity: 0.75;
     animation: cellFill 0.3s ease forwards;
   }
   .grid-cell.filled {
@@ -1096,7 +1096,7 @@
           </div>
         </div>
         <div style="text-align: center;">
-          <canvas id="spiralCanvas" width="320" height="320" style="border-radius: 12px; border: 1px solid rgba(76,175,80,0.15); background: rgba(10,20,15,0.3);"></canvas>
+          <canvas id="spiralCanvas" width="320" height="320" style="border-radius: 12px; border: 1px solid rgba(76,175,80,0.25); background: rgba(15,25,20,0.6);"></canvas>
           <div style="margin-top: 8px; font-size: 0.7rem; color: #6a8a6a;">
             <span style="color:#4CAF50;">&#x25CF;</span> surveyor &nbsp;
             <span style="color:#FFD54F;">&#x25CF;</span> actual well &nbsp;
@@ -1516,8 +1516,8 @@ function magColor(r, c, alpha) {
   const dist = Math.sqrt(dr*dr + dc*dc);
   const val = Math.max(0, 1 - dist / 6);
   const hue = (1 - val) * 240;
-  const sat = 70 + val * 25;
-  const light = 40 + val * 35;
+  const sat = 80 + val * 15;
+  const light = 50 + val * 35;
   return `hsla(${hue}, ${sat}%, ${light}%, ${alpha})`;
 }
 
@@ -1571,12 +1571,12 @@ function drawWalkFrame(pathSoFar, currentPos, fullPath) {
   const cellW = w / G;
   ctx.clearRect(0, 0, w, h);
 
-  // Subtle background fill for better contrast
-  ctx.fillStyle = 'rgba(15, 30, 20, 0.4)';
+  // Background fill
+  ctx.fillStyle = 'rgba(15, 25, 20, 0.5)';
   ctx.fillRect(0, 0, w, h);
 
   // Draw grid lines
-  ctx.strokeStyle = 'rgba(76, 175, 80, 0.15)';
+  ctx.strokeStyle = 'rgba(76, 175, 80, 0.25)';
   ctx.lineWidth = 0.5;
   for (let i = 0; i <= G; i++) {
     ctx.beginPath(); ctx.moveTo(i * cellW, 0); ctx.lineTo(i * cellW, h); ctx.stroke();
@@ -1586,17 +1586,17 @@ function drawWalkFrame(pathSoFar, currentPos, fullPath) {
   // Draw well marker at center
   ctx.fillStyle = '#FFD54F';
   ctx.beginPath();
-  ctx.arc(5.5 * cellW, 5.5 * cellW, 6, 0, Math.PI * 2);
+  ctx.arc(5.5 * cellW, 5.5 * cellW, 7, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = 'rgba(255, 213, 79, 0.25)';
+  ctx.fillStyle = 'rgba(255, 213, 79, 0.35)';
   ctx.beginPath();
-  ctx.arc(5.5 * cellW, 5.5 * cellW, 20, 0, Math.PI * 2);
+  ctx.arc(5.5 * cellW, 5.5 * cellW, 24, 0, Math.PI * 2);
   ctx.fill();
 
   // Draw path trail
   if (pathSoFar.length > 1) {
-    ctx.strokeStyle = 'rgba(76, 175, 80, 0.5)';
-    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = 'rgba(76, 175, 80, 0.7)';
+    ctx.lineWidth = 3;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
@@ -1612,12 +1612,12 @@ function drawWalkFrame(pathSoFar, currentPos, fullPath) {
   // Draw surveyor dot
   if (currentPos) {
     // Glow
-    ctx.fillStyle = 'rgba(76, 175, 80, 0.35)';
+    ctx.fillStyle = 'rgba(76, 175, 80, 0.45)';
     ctx.beginPath();
-    ctx.arc(currentPos.x, currentPos.y, 12, 0, Math.PI * 2);
+    ctx.arc(currentPos.x, currentPos.y, 14, 0, Math.PI * 2);
     ctx.fill();
     // Dot
-    ctx.fillStyle = '#66BB6A';
+    ctx.fillStyle = '#81C784';
     ctx.beginPath();
     ctx.arc(currentPos.x, currentPos.y, 6, 0, Math.PI * 2);
     ctx.fill();
@@ -1832,11 +1832,11 @@ function generateSpiralPath() {
 
 function drawSpiralFrame(visited, currentPos, phase, scanCount, totalScan) {
   sCtx.clearRect(0, 0, SW, SW);
-  sCtx.fillStyle = 'rgba(15, 30, 20, 0.4)';
+  sCtx.fillStyle = 'rgba(15, 25, 20, 0.5)';
   sCtx.fillRect(0, 0, SW, SW);
 
-  // Grid lines (subtle for 25x25)
-  sCtx.strokeStyle = 'rgba(76, 175, 80, 0.07)';
+  // Grid lines
+  sCtx.strokeStyle = 'rgba(76, 175, 80, 0.15)';
   sCtx.lineWidth = 0.3;
   for (let i = 0; i <= SG; i++) {
     sCtx.beginPath(); sCtx.moveTo(i * sCellW, 0); sCtx.lineTo(i * sCellW, SW); sCtx.stroke();
@@ -1846,12 +1846,12 @@ function drawSpiralFrame(visited, currentPos, phase, scanCount, totalScan) {
   // GPS marker (center)
   const gpsR = Math.floor(SG / 2), gpsC = Math.floor(SG / 2);
   const gpsCx = (gpsC + 0.5) * sCellW, gpsCy = (gpsR + 0.5) * sCellW;
+  sCtx.strokeStyle = 'rgba(255,255,255,0.4)';
+  sCtx.lineWidth = 1;
+  sCtx.beginPath(); sCtx.moveTo(gpsCx - 7, gpsCy); sCtx.lineTo(gpsCx + 7, gpsCy); sCtx.stroke();
+  sCtx.beginPath(); sCtx.moveTo(gpsCx, gpsCy - 7); sCtx.lineTo(gpsCx, gpsCy + 7); sCtx.stroke();
   sCtx.strokeStyle = 'rgba(255,255,255,0.2)';
-  sCtx.lineWidth = 0.8;
-  sCtx.beginPath(); sCtx.moveTo(gpsCx - 6, gpsCy); sCtx.lineTo(gpsCx + 6, gpsCy); sCtx.stroke();
-  sCtx.beginPath(); sCtx.moveTo(gpsCx, gpsCy - 6); sCtx.lineTo(gpsCx, gpsCy + 6); sCtx.stroke();
-  sCtx.strokeStyle = 'rgba(255,255,255,0.1)';
-  sCtx.beginPath(); sCtx.arc(gpsCx, gpsCy, 8, 0, Math.PI * 2); sCtx.stroke();
+  sCtx.beginPath(); sCtx.arc(gpsCx, gpsCy, 10, 0, Math.PI * 2); sCtx.stroke();
 
   // Draw visited cells
   let anomalyDetected = false;
@@ -1859,9 +1859,9 @@ function drawSpiralFrame(visited, currentPos, phase, scanCount, totalScan) {
     const signal = wellSignal(v.r, v.c);
     if (signal > ANOMALY_THRESHOLD) anomalyDetected = true;
     const hue = (1 - signal) * 240;
-    const sat = 70 + signal * 25;
-    const light = signal > 0.08 ? 40 + signal * 35 : 28;
-    const alpha = signal > 0.08 ? 0.85 : 0.35;
+    const sat = 80 + signal * 15;
+    const light = signal > 0.08 ? 50 + signal * 35 : 42;
+    const alpha = signal > 0.08 ? 0.9 : 0.6;
     sCtx.fillStyle = `hsla(${hue}, ${sat}%, ${light}%, ${alpha})`;
     sCtx.fillRect(v.c * sCellW + 0.5, v.r * sCellW + 0.5, sCellW - 1, sCellW - 1);
   }
@@ -1869,29 +1869,29 @@ function drawSpiralFrame(visited, currentPos, phase, scanCount, totalScan) {
   // Well marker (appears when anomaly detected)
   if (anomalyDetected) {
     const wx = (wellC + 0.5) * sCellW, wy = (wellR + 0.5) * sCellW;
-    sCtx.fillStyle = 'rgba(255, 213, 79, 0.25)';
-    sCtx.beginPath(); sCtx.arc(wx, wy, 14, 0, Math.PI * 2); sCtx.fill();
+    sCtx.fillStyle = 'rgba(255, 213, 79, 0.4)';
+    sCtx.beginPath(); sCtx.arc(wx, wy, 18, 0, Math.PI * 2); sCtx.fill();
     sCtx.fillStyle = '#FFD54F';
-    sCtx.beginPath(); sCtx.arc(wx, wy, 3.5, 0, Math.PI * 2); sCtx.fill();
+    sCtx.beginPath(); sCtx.arc(wx, wy, 4.5, 0, Math.PI * 2); sCtx.fill();
   }
 
   // Surveyor dot
   if (currentPos) {
     const cx = (currentPos.c + 0.5) * sCellW, cy = (currentPos.r + 0.5) * sCellW;
-    sCtx.fillStyle = 'rgba(76, 175, 80, 0.3)';
-    sCtx.beginPath(); sCtx.arc(cx, cy, 7, 0, Math.PI * 2); sCtx.fill();
-    sCtx.fillStyle = '#66BB6A';
-    sCtx.beginPath(); sCtx.arc(cx, cy, 3.5, 0, Math.PI * 2); sCtx.fill();
+    sCtx.fillStyle = 'rgba(76, 175, 80, 0.45)';
+    sCtx.beginPath(); sCtx.arc(cx, cy, 9, 0, Math.PI * 2); sCtx.fill();
+    sCtx.fillStyle = '#81C784';
+    sCtx.beginPath(); sCtx.arc(cx, cy, 4.5, 0, Math.PI * 2); sCtx.fill();
     sCtx.fillStyle = '#fff';
-    sCtx.beginPath(); sCtx.arc(cx, cy, 1.5, 0, Math.PI * 2); sCtx.fill();
+    sCtx.beginPath(); sCtx.arc(cx, cy, 2, 0, Math.PI * 2); sCtx.fill();
   }
 
   // Labels
-  sCtx.fillStyle = 'rgba(255,255,255,0.25)';
-  sCtx.font = '8px system-ui';
-  sCtx.fillText('GPS', gpsCx + 10, gpsCy + 3);
+  sCtx.fillStyle = 'rgba(255,255,255,0.45)';
+  sCtx.font = '9px system-ui';
+  sCtx.fillText('GPS', gpsCx + 12, gpsCy + 3);
   // Grid info
-  sCtx.fillStyle = 'rgba(255,255,255,0.15)';
+  sCtx.fillStyle = 'rgba(255,255,255,0.3)';
   sCtx.fillText('25\u00d725 \u00b7 5m cells \u00b7 125m', 4, SW - 4);
 
   // Status
